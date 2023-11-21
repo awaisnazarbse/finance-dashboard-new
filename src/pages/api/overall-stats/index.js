@@ -271,7 +271,7 @@ export default async function handler(req, res) {
             dayjs(body?.endDate).format("YYYY-MM-DD")
           );
           sales = await getAllSalesNew(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
+            dayjs(body?.startDate).add(1, "day").format("YYYY-MM-DD"),
             dayjs(body?.endDate).format("YYYY-MM-DD"),
             API_TOKEN
           );
@@ -353,25 +353,25 @@ export default async function handler(req, res) {
         //   cogs = await offersApi.getOfferCOGsByOfferIds(offerIds);
         // }
         cogs = await getCog(offerIds);
-        console.log("data in api", {
-          totalRevenue,
-          takealotFee,
-          unitSold,
-          totalExpenses,
-          cptRevenue,
-          jhbRevenue,
-          cptTakealotFee,
-          jhbTakealotFee,
-          cptUnitSold,
-          jhbUnitSold,
-          returnTotal,
-          returnCost,
-          cptReturnTotal,
-          cptReturnCost,
-          jhbReturnTotal,
-          jhbReturnCost,
-          cogs,
-        });
+        // console.log("data in api", {
+        //   totalRevenue,
+        //   takealotFee,
+        //   unitSold,
+        //   totalExpenses,
+        //   cptRevenue,
+        //   jhbRevenue,
+        //   cptTakealotFee,
+        //   jhbTakealotFee,
+        //   cptUnitSold,
+        //   jhbUnitSold,
+        //   returnTotal,
+        //   returnCost,
+        //   cptReturnTotal,
+        //   cptReturnCost,
+        //   jhbReturnTotal,
+        //   jhbReturnCost,
+        //   cogs,
+        // });
         res.status(200).json({
           totalRevenue,
           takealotFee,
