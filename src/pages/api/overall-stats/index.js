@@ -240,6 +240,7 @@ export default async function handler(req, res) {
       });
     } else {
       const API_TOKEN = body?.marketplace;
+      console.log("API_TOKEN in overall new", API_TOKEN)
       if (body?.productTitle === "") {
         let sales = [];
         if (body?.duration === "This Year") {
@@ -271,9 +272,9 @@ export default async function handler(req, res) {
             dayjs(body?.endDate).format("YYYY-MM-DD")
           );
           sales = await getAllSalesNew(
-            dayjs(body?.startDate).add(1, "day").format("YYYY-MM-DD"),
+            dayjs(body?.startDate).format("YYYY-MM-DD"),
             dayjs(body?.endDate).format("YYYY-MM-DD"),
-            API_TOKEN
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
         }
         let totalRevenue = 0;

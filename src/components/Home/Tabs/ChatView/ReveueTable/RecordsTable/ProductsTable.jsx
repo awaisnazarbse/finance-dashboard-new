@@ -58,8 +58,8 @@ const ProductsTable = ({
       } else {
         console.log("product sales else running");
         response = await axios.post(
-          // "http://localhost:3000/sales/products_sales",
-          "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
+          "http://localhost:3000/sales/products_sales",
+          // "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
           {
             apiKey: user?.apiKey,
             startDate: startDate,
