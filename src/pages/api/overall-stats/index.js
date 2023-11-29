@@ -401,7 +401,7 @@ export default async function handler(req, res) {
             e?.sale_status !== "Cancelled by Customer" &&
             e?.sale_status !== "Cancelled by Takealot"
           ) {
-            console.log("totalRevenue", totalRevenue);
+            // console.log("totalRevenue", totalRevenue);
             totalRevenue += e?.selling_price;
             unitSold += e?.quantity;
           }
@@ -453,25 +453,25 @@ export default async function handler(req, res) {
           totalExpenses = totalExpenses + expense?.amount;
         });
 
-        console.log("data in api", {
-          totalRevenue,
-          takealotFee,
-          unitSold,
-          totalExpenses,
-          cptRevenue,
-          jhbRevenue,
-          cptTakealotFee,
-          jhbTakealotFee,
-          cptUnitSold,
-          jhbUnitSold,
-          returnTotal,
-          returnCost,
-          cptReturnTotal,
-          cptReturnCost,
-          jhbReturnTotal,
-          jhbReturnCost,
-          cogs,
-        });
+        // console.log("data in api", {
+        //   totalRevenue,
+        //   takealotFee,
+        //   unitSold,
+        //   totalExpenses,
+        //   cptRevenue,
+        //   jhbRevenue,
+        //   cptTakealotFee,
+        //   jhbTakealotFee,
+        //   cptUnitSold,
+        //   jhbUnitSold,
+        //   returnTotal,
+        //   returnCost,
+        //   cptReturnTotal,
+        //   cptReturnCost,
+        //   jhbReturnTotal,
+        //   jhbReturnCost,
+        //   cogs,
+        // });
 
         if (transactions?.length > 0) {
           transactions.forEach((e) => {

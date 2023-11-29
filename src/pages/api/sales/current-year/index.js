@@ -708,8 +708,8 @@ export default async function handler(req, res) {
         default:
           throw new Error("Invalid duration");
       }
-      console.log("start after", startDate);
-      console.log("end after", endDate);
+      // console.log("start after", startDate);
+      // console.log("end after", endDate);
       if (body?.duration === "This Year") {
         const first6MonthsSales = await getAllSalesByProduct(
           dayjs(startDate1).format("YYYY-MM-DD"),
@@ -735,7 +735,7 @@ export default async function handler(req, res) {
           body?.productTitle
         );
       }
-      console.log("salesData", salesData?.length);
+      // console.log("salesData", salesData?.length);
       const expensesData = await expensesApi.getExpensesByDateRange({
         start: dayjs(startDate).format("DD MMM YYYY"),
         end: dayjs(endDate).format("DD MMM YYYY"),
@@ -762,7 +762,7 @@ export default async function handler(req, res) {
         default:
           throw new Error("Invalid groupBy");
       }
-      console.log("group24edData", groupedData);
+      // console.log("group24edData", groupedData);
       // Create an array of all time intervals (hours, weeks, or months)
       let timeIntervals = [];
       switch (body?.groupBy) {
