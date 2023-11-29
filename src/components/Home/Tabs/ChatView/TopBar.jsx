@@ -124,12 +124,12 @@ const TopBar = ({
               //   new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
               // );
               setStartDate(
-                new Date(new Date().getFullYear(), currentDate.getMonth(), 1)
+                new Date(new Date().getFullYear(), new Date().getMonth(), 1)
               );
               setEndDate(
                 new Date(
                   new Date().getFullYear(),
-                  currentDate.getMonth() + 1,
+                  new Date().getMonth() + 1,
                   0
                 )
               );
