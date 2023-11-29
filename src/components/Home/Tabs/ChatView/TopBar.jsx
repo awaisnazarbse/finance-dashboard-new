@@ -23,7 +23,7 @@ const TopBar = ({
   offersLoading,
   userApiKeys,
   setMarketplace,
-  marketplace
+  marketplace,
 }) => {
   console.log("offer in chartview", offers);
   const [openRangePicker, setOpenRangePicker] = useState(false);
@@ -123,8 +123,18 @@ const TopBar = ({
               // setEndDate(
               //   new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
               // );
-              setStartDate(dayjs().startOf("month"));
-              setEndDate(dayjs().endOf("month"));
+              setStartDate(
+                new Date(new Date().getFullYear(), currentDate.getMonth(), 1)
+              );
+              setEndDate(
+                new Date(
+                  new Date().getFullYear(),
+                  currentDate.getMonth() + 1,
+                  0
+                )
+              );
+              // setStartDate(dayjs().startOf("month"));
+              // setEndDate(dayjs().endOf("month"));
               setAggregatedBy("Weekly");
               setOpenRangePicker(false);
             }

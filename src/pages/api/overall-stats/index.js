@@ -358,11 +358,11 @@ export default async function handler(req, res) {
           const formattedEnd = formatDate(endDate)
           console.log(
             "start date chart view cards:",
-            formattedStart
+            startDate
           );
           console.log(
             "end date chart view cards:",
-            formattedEnd
+            endDate
           );
           sales = await getAllSalesNew(
             formattedStart,
