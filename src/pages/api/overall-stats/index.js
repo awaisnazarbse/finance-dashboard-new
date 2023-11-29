@@ -352,26 +352,33 @@ export default async function handler(req, res) {
             second6MonthsTransactions
           );
         } else {
-          const startDate = dayjs(body?.startDate).format("DD MMM YYYY");
-          const endDate = dayjs(body?.endDate).format("DD MMM YYYY");
-          const formattedStart = formatDate(startDate);
-          const formattedEnd = formatDate(endDate);
-          console.log(
-            "start date chart view cards:",
-            dayjs().startOf("month").format("YYYY-MM-DD")
-          );
-          console.log(
-            "end date chart view cards:",
-            dayjs().endOf("month").format("YYYY-MM-DD")
-          );
-          console.log(
-            "format start:",
-            dayjs(body?.startDate).format("YYYY-MM-DD")
-          );
-          console.log("format end:", dayjs(body?.endDate).format("YYYY-MM-DD"));
+          let startDate = null;
+          let endDate = null;
+          if (body?.duration === "This Month") {
+            startDate = dayjs().startOf("month").format("YYYY-MM-DD");
+            endDate = dayjs().endOf("month").format("YYYY-MM-DD");
+          } else if (body?.duration === "Last Month") {
+            startDate = dayjs()
+              .subtract(1, "month")
+              .startOf("month")
+              .format("YYYY-MM-DD");
+            endDate = dayjs()
+              .subtract(1, "month")
+              .endOf("month")
+              .format("YYYY-MM-DD");
+          } else if (body?.duration === "Today") {
+            startDate = dayjs().format("YYYY-MM-DD");
+            endDate = dayjs().format("YYYY-MM-DD");
+          } else if (body?.duration === "Yesterday") {
+            startDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+            endDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+          } else {
+            startDate = dayjs(body?.startDate).format("YYYY-MM-DD");
+            endDate = dayjs(body?.endDate).format("YYYY-MM-DD");
+          }
           sales = await getAllSalesNew(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
+            startDate,
+            endDate,
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
           // transactions = await getAllTransactions(

@@ -27,7 +27,7 @@ const TopBar = ({
   offersLoading,
   userApiKeys,
   setMarketplace,
-  marketplace,
+  marketplace
 }) => {
   console.log("offer in chartview", offers);
   const [openRangePicker, setOpenRangePicker] = useState(false);
@@ -127,19 +127,9 @@ const TopBar = ({
               // setEndDate(
               //   new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
               // );
-              const userTimezone =
-                Intl.DateTimeFormat().resolvedOptions().timeZone;
-              setStartDate(dayjs().tz(userTimezone).startOf("month"));
-              setEndDate(dayjs().tz(userTimezone).endOf("month"));
-              console.log("userTimezone", userTimezone);
-              console.log(
-                "start in front",
-                dayjs().tz(userTimezone).startOf("month")
-              );
-              console.log(
-                "end in front",
-                dayjs().tz(userTimezone).endOf("month")
-              );
+              const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+              setStartDate(dayjs().startOf("month"));
+              setEndDate(dayjs().endOf("month"));
               setAggregatedBy("Weekly");
               setOpenRangePicker(false);
             }
