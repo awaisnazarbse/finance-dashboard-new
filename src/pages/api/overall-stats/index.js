@@ -356,8 +356,14 @@ export default async function handler(req, res) {
           const endDate = dayjs(body?.endDate).format("DD MMM YYYY");
           const formattedStart = formatDate(startDate);
           const formattedEnd = formatDate(endDate);
-          console.log("start date chart view cards:", body?.startDate);
-          console.log("end date chart view cards:", body?.endDate);
+          console.log(
+            "start date chart view cards:",
+            dayjs().startOf("month").format("YYYY-MM-DD")
+          );
+          console.log(
+            "end date chart view cards:",
+            dayjs().endOf("month").format("YYYY-MM-DD")
+          );
           console.log(
             "format start:",
             dayjs(body?.startDate).format("YYYY-MM-DD")
