@@ -361,15 +361,15 @@ export default async function handler(req, res) {
             dayjs(body?.endDate).tz('America/New_York').format("YYYY-MM-DD")
           );
           sales = await getAllSalesNew(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
+            dayjs(body?.startDate).tz('America/New_York').format("YYYY-MM-DD"),
+            dayjs(body?.endDate).tz('America/New_York').format("YYYY-MM-DD"),
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
-          transactions = await getAllTransactions(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
-            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
-          );
+          // transactions = await getAllTransactions(
+          //   dayjs(body?.startDate).format("YYYY-MM-DD"),
+          //   dayjs(body?.endDate).format("YYYY-MM-DD"),
+          //   "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          // );
         }
         let totalRevenue = 0;
         let takealotFee = 0;
