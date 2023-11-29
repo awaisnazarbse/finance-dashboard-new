@@ -352,17 +352,21 @@ export default async function handler(req, res) {
             second6MonthsTransactions
           );
         } else {
+          const startDate = dayjs(body?.startDate).format("DD MMM YYYY")
+          const endDate = dayjs(body?.endDate).format("DD MMM YYYY")
+          const formattedStart = formatDate(startDate)
+          const formattedEnd = formatDate(endDate)
           console.log(
             "start date chart view cards:",
-            dayjs(body?.startDate).tz('America/New_York').format("YYYY-MM-DD")
+            formattedStart
           );
           console.log(
             "end date chart view cards:",
-            dayjs(body?.endDate).tz('America/New_York').format("YYYY-MM-DD")
+            formattedEnd
           );
           sales = await getAllSalesNew(
-            dayjs(body?.startDate).tz('America/New_York').format("YYYY-MM-DD"),
-            dayjs(body?.endDate).tz('America/New_York').format("YYYY-MM-DD"),
+            formattedStart,
+            formattedEnd,
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
           // transactions = await getAllTransactions(
@@ -674,3 +678,11 @@ export default async function handler(req, res) {
       .json({ error: "An error occurred while fetching data from the API." });
   }
 }
+
+const formatDate = (inputDate) => {
+  const dateObject = new Date(inputDate);
+  const year = dateObject.getFullYear();
+  const month = `0${dateObject.getMonth() + 1}`.slice(-2);
+  const day = `0${dateObject.getDate()}`.slice(-2);
+  return `${year}-${month}-${day}`;
+};
