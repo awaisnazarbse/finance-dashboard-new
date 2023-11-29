@@ -23,6 +23,8 @@ const TopBar = ({
   marketplace,
   setMarketplace,
   page = "p&l",
+  setBottomTableDates,
+  setBottomTableDuration,
 }) => {
   const [openRangePicker, setOpenRangePicker] = useState(false);
   return (
@@ -84,20 +86,41 @@ const TopBar = ({
           />
           <Select
             placeholder="Last 3 Months, by week"
-            options={[
-              { label: "Last 12 Months, by month", value: "Last 12 Months" },
-              { label: "Last 3 Months, by week", value: "Last 3 Months" },
-              { label: "Last 30 Days, by day", value: "Last 30 Days" },
-              { label: "Custom", value: "Custom" },
-            ]}
+            options={
+              page === "p&l"
+                ? [
+                    {
+                      label: "Last 12 Months, by month",
+                      value: "Last 12 Months",
+                    },
+                    { label: "Last 3 Months, by week", value: "Last 3 Months" },
+                    { label: "Last 30 Days, by day", value: "Last 30 Days" },
+                    // { label: "Custom", value: "Custom" },
+                  ]
+                : [
+                    {
+                      label: "Last 12 Months, by month",
+                      value: "Last 12 Months",
+                    },
+                    { label: "Last 3 Months, by week", value: "Last 3 Months" },
+                    { label: "Last 30 Days, by day", value: "Last 30 Days" },
+                    { label: "Custom", value: "Custom" },
+                  ]
+            }
             bordered={false}
             onChange={(e) => {
               setDuration(e);
+              if (page === "p&l") setBottomTableDuration(e);
               if (e === "Last 12 Months") {
                 setDates([
                   dayjs().subtract(12, "months").startOf("month"),
                   dayjs(),
                 ]);
+                if (page === "p&l")
+                  setBottomTableDates([
+                    dayjs().subtract(12, "months").startOf("month"),
+                    dayjs(),
+                  ]);
                 setOpenRangePicker(false);
               }
               if (e === "Last 3 Months") {
@@ -109,6 +132,19 @@ const TopBar = ({
                   ),
                   new Date(new Date().getFullYear(), new Date().getMonth(), 0),
                 ]);
+                if (page === "p&l")
+                  setBottomTableDates([
+                    new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth() - 2 - 1,
+                      1
+                    ),
+                    new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      0
+                    ),
+                  ]);
                 setOpenRangePicker(false);
               }
               if (e === "Last 30 Days") {
@@ -124,6 +160,19 @@ const TopBar = ({
                     new Date().getDate()
                   ),
                 ]);
+                if (page === "p&l")
+                  setBottomTableDates([
+                    new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      new Date().getDate() - 29 - 1
+                    ),
+                    new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      new Date().getDate()
+                    ),
+                  ]);
 
                 setOpenRangePicker(false);
               }
@@ -154,6 +203,8 @@ const TopBar = ({
                 format={"DD MMM YYYY"}
                 onChange={(e) => {
                   setDates([e[0].toDate(), e[1].toDate()]);
+                  if (page === "p&l")
+                    setBottomTableDates([e[0].toDate(), e[1].toDate()]);
                 }}
               />
             </div>

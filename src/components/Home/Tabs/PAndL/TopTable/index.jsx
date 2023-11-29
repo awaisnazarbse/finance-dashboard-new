@@ -1,14 +1,25 @@
 import { Table } from "antd";
 import dayjs from "dayjs";
 
-const TopTable = ({ data, isLoading, dates, cols, duration, loading }) => {
+const TopTable = ({
+  data,
+  isLoading,
+  dates,
+  cols,
+  duration,
+  loading,
+  setDates,
+  setBottomTableDates,
+  setBottomTableDuration,
+  bottomTableDates,
+}) => {
   console.log("data in pl", data);
   console.log("cols in pl", cols);
   const columns = [
     {
       title: (
         <div className="flex items-center space-x-4">
-          <span className="text-xs text-[#777777]">Parameter</span>
+          <span className="text-xs text-[#777777] pl-5">Parameter</span>
         </div>
       ),
       dataIndex: "product",
@@ -18,31 +29,33 @@ const TopTable = ({ data, isLoading, dates, cols, duration, loading }) => {
         </div>
       ),
       fixed: "left",
+      width: "200px"
     },
-    // {
-    //   title: (
-    //     <div className="flex items-center space-x-4">
-    //       <span className="text-xs text-[#777777]">
-    //         {dayjs(dates[0]).format("DD/MM/YY") +
-    //           " - " +
-    //           dayjs(dates[1]).format("DD/MM/YY")}
-    //       </span>
-    //     </div>
-    //   ),
-    //   dataIndex: "curPolicy",
-    //   render: (_, record) => (
-    //     <div className="w-full flex items-center">
-    //       <span className="text-xs text-black">{record?.today}</span>
-    //     </div>
-    //   ),
-    // },
-    ...cols?.map((title, index) => ({
+    ...cols?.map((col, index) => ({
       title: (
         <div className="flex items-center space-x-4">
-          <span className="text-xs text-[#777777]">{title}</span>
+          <span
+            className="text-xs text-[#777777] cursor-pointer"
+            style={{
+              color:
+                dayjs(col?.start).isSame(dayjs(bottomTableDates[0])) &&
+                dayjs(col?.end).isSame(dayjs(bottomTableDates[1]))
+                  ? "#f7b614"
+                  : "#777777",
+            }}
+            onClick={() => {
+              setBottomTableDuration("");
+              setBottomTableDates([
+                dayjs(col.start)?.toDate(),
+                dayjs(col.end)?.toDate(),
+              ]);
+            }}
+          >
+            {col?.title}
+          </span>
         </div>
       ),
-      dataIndex: `sales[${index}].sales`, // Assuming your data structure matches this
+      dataIndex: `sales[${index}].sales`,
       key: `sales[${index}].sales`,
       render: (_, record) => (
         <div className="w-full flex items-center">
@@ -54,11 +67,20 @@ const TopTable = ({ data, isLoading, dates, cols, duration, loading }) => {
               record?.parameter === "Gross Profit" ||
               record?.parameter === "Expenses" ||
               record?.parameter === "Estimated Payout" ||
-              record?.parameter === "Cost of Goods"
-                ? `R ${record[title] !== "-" ? record[title]?.toFixed(2) : "-"}`
+              record?.parameter === "Cost of Goods" ||
+              record?.parameter === "Return Cost"
+                ? `R ${
+                    record[col?.title] !== "-"
+                      ? record[col?.title]?.toFixed(2)
+                      : "-"
+                  }`
                 : record?.parameter === "Margin" || record?.parameter === "ROI"
-                ? `${record[title] !== "-" ? record[title]?.toFixed(2) : "-"}%`
-                : record[title]}
+                ? `${
+                    record[col?.title] !== "-"
+                      ? record[col?.title]?.toFixed(2)
+                      : "-"
+                  }%`
+                : `R ${record[col?.title]?.toFixed(2)}`}
             </span>
           </div>
         </div>

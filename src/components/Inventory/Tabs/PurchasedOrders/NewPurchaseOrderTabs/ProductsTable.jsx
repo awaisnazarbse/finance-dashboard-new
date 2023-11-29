@@ -34,18 +34,74 @@ const EditableCell = ({
   }, [editing]);
   const toggleEdit = () => {
     setEditing(!editing);
-    form.setFieldsValue({
-      [dataIndex]: record[dataIndex],
-    });
+    if (
+      dataIndex !== "boxWidth" &&
+      dataIndex !== "boxHeight" &&
+      dataIndex !== "boxLength"
+    ) {
+      form.setFieldsValue({
+        [dataIndex]: record[dataIndex],
+      });
+    } else {
+      if (dataIndex === "boxWidth")
+        form.setFieldsValue({
+          [dataIndex]: record?.boxDimensions?.width,
+        });
+      if (dataIndex === "boxHeight")
+        form.setFieldsValue({
+          [dataIndex]: record?.boxDimensions?.height,
+        });
+      if (dataIndex === "boxLength")
+        form.setFieldsValue({
+          [dataIndex]: record?.boxDimensions?.length,
+        });
+    }
   };
   const save = async () => {
+    // console.log("data index", dataIndex);
     try {
+      let updatedData;
       const values = await form.validateFields();
       const found = productsData?.find((e) => e?.key === record?.key);
-      let updatedData = {
-        ...found,
-        ...values,
-      };
+      console.log("found", found);
+      if (
+        dataIndex !== "boxWidth" &&
+        dataIndex !== "boxHeight" &&
+        dataIndex !== "boxLength"
+      ) {
+        updatedData = {
+          ...found,
+          ...values,
+        };
+      } else {
+        if (dataIndex === "boxWidth") {
+          updatedData = {
+            ...found,
+            boxDimensions: {
+              ...found?.boxDimensions,
+              width: values?.boxWidth,
+            },
+          };
+        }
+        if (dataIndex === "boxHeight") {
+          updatedData = {
+            ...found,
+            boxDimensions: {
+              ...found?.boxDimensions,
+              height: values?.boxHeight,
+            },
+          };
+        }
+        if (dataIndex === "boxLength") {
+          updatedData = {
+            ...found,
+            boxDimensions: {
+              ...found?.boxDimensions,
+              length: values?.boxLength,
+            },
+          };
+        }
+      }
       let manufacturingCostPerUnit = 0;
       let boxesOrdered = 0;
       if (dataIndex === "unitsOrdered" || dataIndex === "unitsPerBox") {
@@ -87,18 +143,50 @@ const EditableCell = ({
 
       console.log("values", values);
       if (
-        dataIndex === "boxDimensions" &&
+        (dataIndex === "boxWidth" ||
+          dataIndex === "boxHeight" ||
+          dataIndex === "boxLength") &&
         updatedData?.boxesOrdered &&
         updatedData?.boxesOrdered !== "-"
       ) {
-        const boxD = values?.boxDimensions?.split("x");
+        // const boxD = values?.boxDimensions?.split("x");
+
         let cbm = 1;
 
-        boxD?.forEach((e, i) => {
-          const num = Number(e);
-          cbm = cbm * num;
-        });
+        // boxD?.forEach((e, i) => {
+        //   const num = Number(e);
+        //   cbm = cbm * num;
+        // });
+        if (dataIndex === "boxWidth") {
+          updatedData.boxDimensions.width = Number(values?.boxWidth);
+          cbm =
+            Number(values?.boxWidth) *
+            updatedData?.boxDimensions?.length *
+            updatedData?.boxDimensions?.height;
+        } else if (dataIndex === "boxHeight") {
+          updatedData.boxDimensions.height = Number(values?.boxHeight);
+          cbm =
+            Number(values?.boxHeight) *
+            updatedData?.boxDimensions?.length *
+            updatedData?.boxDimensions?.width;
+        } else if (dataIndex === "boxLength") {
+          updatedData.boxDimensions.length = Number(values?.boxLength);
+          cbm =
+            Number(values?.boxLength) *
+            updatedData?.boxDimensions?.height *
+            updatedData?.boxDimensions?.width;
+        }
 
+        console.log("cbm...", cbm);
+
+        updatedData.cbm = (cbm / 1000000) * updatedData?.boxesOrdered;
+      }
+
+      if (dataIndex === "unitsOrdered" || dataIndex === "unitsPerBox") {
+        const cbm =
+          updatedData?.boxDimensions?.length *
+          updatedData?.boxDimensions?.width *
+          updatedData?.boxDimensions?.height;
         updatedData.cbm = (cbm / 1000000) * updatedData?.boxesOrdered;
       }
 
@@ -119,10 +207,15 @@ const EditableCell = ({
         name={dataIndex}
       >
         <Input
-          className="text-[10px] font-medium w-full"
+          className="text-[10px] font-medium min-w-[3rem]"
           ref={inputRef}
           onPressEnter={save}
           onBlur={save}
+          style={{
+            minHeight: "2.5rem",
+            border: "1px solid #FAFAFA",
+            borderRadius: "0px",
+          }}
         />
       </Form.Item>
     ) : (
@@ -139,7 +232,12 @@ const EditableCell = ({
   }
   return <td {...restProps}>{childNode}</td>;
 };
-const ProductsTable = ({ productsData, setProductsData, offers }) => {
+const ProductsTable = ({
+  productsData,
+  setProductsData,
+  offers,
+  transportationCostData,
+}) => {
   const defaultColumns = [
     {
       title: (
@@ -232,13 +330,13 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
           </span>
         </div>
       ),
-      editable: true,
+      // editable: true,
     },
     {
       title: (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-center space-x-4">
           <span className="text-[10px] font-light text-[#777777]">
-            Box dimensions
+            Box dimensions (cm)
           </span>
         </div>
       ),
@@ -251,6 +349,50 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
         </div>
       ),
       editable: true,
+      children: [
+        {
+          title: (
+            <span className="text-[10px] font-light text-[#777777]">L</span>
+          ),
+          dataIndex: "boxLength",
+          render: (_, record) => (
+            <div className="w-full flex items-center py-3">
+              <span className="text-[10px] font-light text-black line-clamp-1">
+                {record?.boxDimensions?.length}
+              </span>
+            </div>
+          ),
+          editable: true,
+        },
+        {
+          title: (
+            <span className="text-[10px] font-light text-[#777777]">W</span>
+          ),
+          dataIndex: "boxWidth",
+          render: (_, record) => (
+            <div className="w-full flex items-center py-3">
+              <span className="text-[10px] font-light text-black line-clamp-1">
+                {record?.boxDimensions?.width}
+              </span>
+            </div>
+          ),
+          editable: true,
+        },
+        {
+          title: (
+            <span className="text-[10px] font-light text-[#777777]">H</span>
+          ),
+          dataIndex: "boxHeight",
+          render: (_, record) => (
+            <div className="w-full flex items-center py-3">
+              <span className="text-[10px] font-light text-black line-clamp-1">
+                {record?.boxDimensions?.height}
+              </span>
+            </div>
+          ),
+          editable: true,
+        },
+      ],
     },
     {
       title: (
@@ -262,11 +404,11 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
       render: (_, record) => (
         <div className="w-full flex items-center py-3">
           <span className="text-[10px] font-light text-black line-clamp-1">
-            {record?.cbm || "-"}
+            {Number(record?.cbm).toFixed(2) || "-"}
           </span>
         </div>
       ),
-      editable: true,
+      // editable: true,
     },
     {
       title: (
@@ -313,13 +455,32 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
         </div>
       ),
       dataIndex: "transportationCostPerUnit",
-      render: (_, record) => (
-        <div className="w-full flex items-center py-3">
-          <span className="text-[10px] font-light text-black line-clamp-1">
-            {record?.transportationCostPerUnit || "-"}
-          </span>
-        </div>
-      ),
+      render: (_, record) => {
+        let cost = 0;
+        transportationCostData?.map((e) => {
+          cost += e?.amount;
+        });
+        let totalCbm = 0;
+        productsData?.map((e) => {
+          if (e?.cbm) {
+            totalCbm += e?.cbm;
+          }
+        });
+        record.transportationCostPerUnit =
+          (record?.cbm / record?.unitsOrdered) * (cost / totalCbm);
+
+        console.log({ cost, totalCbm });
+        return (
+          <div className="w-full flex items-center py-3">
+            <span className="text-[10px] font-light text-black line-clamp-1">
+              {(
+                (record?.cbm / record?.unitsOrdered) *
+                (cost / totalCbm)
+              ).toFixed(2) || "-"}
+            </span>
+          </div>
+        );
+      },
       editable: true,
     },
     {
@@ -331,31 +492,27 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
         </div>
       ),
       dataIndex: "totalCostPerUnit",
-      render: (_, record) => (
-        <div className="w-full flex items-center py-3">
-          <span className="text-[10px] font-light text-black line-clamp-1">
-            {record?.totalCostPerUnit || "-"}
-          </span>
-        </div>
-      ),
+      render: (_, record) => {
+        const cost =
+          Number(record?.transportationCostPerUnit) +
+          Number(record?.manufacturingCostPerUnit);
+        record.totalCostPerUnit = cost;
+        console.log({
+          transportationCostPerUnit: record?.transportationCostPerUnit,
+          manufacturingCostPerUnit: record?.manufacturingCostPerUnit,
+          cost,
+        });
+        return (
+          <div className="w-full flex items-center py-3">
+            <span className="text-[10px] font-light text-black line-clamp-1">
+              {Number(cost).toFixed(2) || "-"}
+            </span>
+          </div>
+        );
+      },
       editable: true,
     },
-    {
-      title: (
-        <div className="flex items-center space-x-4">
-          <span className="text-[10px] font-light text-[#777777]">HS code</span>
-        </div>
-      ),
-      dataIndex: "hsCode",
-      render: (_, record) => (
-        <div className="w-full flex items-center py-3">
-          <span className="text-[10px] font-light text-black line-clamp-1">
-            {record?.hsCode || "-"}
-          </span>
-        </div>
-      ),
-      editable: true,
-    },
+
     {
       title: (
         <div className="flex items-center space-x-4">
@@ -411,11 +568,41 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
       cell: EditableCell,
     },
   };
-  const columns = defaultColumns.map((col) => {
+  // const columns = defaultColumns.map((col) => {
+  //   if (!col.editable) {
+  //     return col;
+  //   }
+  //   if (col.children) {
+  //     return {
+  //       ...col,
+  //       onCell: (record) => ({
+  //         record,
+  //         editable: col.editable,
+  //         dataIndex: col.dataIndex,
+  //         title: col.title,
+  //         handleSave,
+  //         productsData,
+  //       }),
+  //     };
+  //   }
+  //   return {
+  //     ...col,
+  //     onCell: (record) => ({
+  //       record,
+  //       editable: col.editable,
+  //       dataIndex: col.dataIndex,
+  //       title: col.title,
+  //       handleSave,
+  //       productsData,
+  //     }),
+  //   };
+  // });
+
+  const mapColumns = (col) => {
     if (!col.editable) {
       return col;
     }
-    return {
+    const newCol = {
       ...col,
       onCell: (record) => ({
         record,
@@ -426,7 +613,14 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
         productsData,
       }),
     };
-  });
+    if (col.children) {
+      newCol.children = col.children.map(mapColumns);
+    }
+    return newCol;
+  };
+
+  const columns = defaultColumns.map(mapColumns);
+
   return (
     <div className="flex flex-col space-y-4 items-start">
       <Table
@@ -438,6 +632,7 @@ const ProductsTable = ({ productsData, setProductsData, offers }) => {
         columns={columns}
         pagination={false}
         className="w-full"
+        scroll={{ x: 1000 }}
       />
     </div>
   );

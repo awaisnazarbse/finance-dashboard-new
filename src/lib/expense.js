@@ -82,8 +82,9 @@ const getExpensesByDateRangeWithByCategories = async (range) => {
   let docs = [];
   res.docs.forEach((doc) => {
     if (
-      new Date(doc.data().date) >= new Date(range?.start) &&
-      new Date(doc.data().date) <= new Date(range?.end)
+      new Date(doc.data().date) <= new Date(range?.start) &&
+      new Date(doc.data().date) <= new Date(range?.end) &&
+      new Date(doc.data().endDate) >= new Date(range?.start)
     ) {
       docs.push({
         ...doc.data(),

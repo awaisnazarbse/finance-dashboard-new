@@ -140,7 +140,7 @@ const PurchasedOrder = () => {
     setActive(status);
   };
 
-  const handleSave = () => {
+  const handleSave = (saveSettings) => {
     if (
       productsData?.length <= 0 ||
       Object.values(basicData).some((value) => value === null || value === "")
@@ -156,6 +156,7 @@ const PurchasedOrder = () => {
         shipments: shipmentsData,
         user: user?.uid,
         updatedAt: serverTimestamp(),
+        ...saveSettings
       };
       saveMutation.mutate(data);
     }
@@ -262,6 +263,7 @@ const PurchasedOrder = () => {
                 (value) => value === null || value === ""
               )
             }
+            status={basicData.status}
           />
         </main>
       </DashboardLayout>

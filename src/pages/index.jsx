@@ -64,7 +64,6 @@ export default function Home() {
   const { data: stats, isLoading: statsLoading } = useQuery(
     ["overall-stats", startDate, endDate, productTitle, marketplace],
     async () => {
-      console.log("API key in query", marketplace)
       const res = await fetch(`/api/overall-stats`, {
         body: JSON.stringify({
           apiKey: user?.apiKey,
@@ -78,7 +77,6 @@ export default function Home() {
         method: "POST",
       });
       const data = await res.json();
-      console.log("card new data", data)
       const comparisons = await fetch(`/api/overall-stats/comparison`, {
         body: JSON.stringify({
           apiKey: user?.apiKey,
@@ -97,7 +95,7 @@ export default function Home() {
       return finalData;
     },
     {
-      enabled: !!marketplace,
+      enabled: !!user || !!marketplace,
       refetchOnWindowFocus: false,
     }
   );

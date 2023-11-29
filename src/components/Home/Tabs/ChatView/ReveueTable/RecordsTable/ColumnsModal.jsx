@@ -15,40 +15,44 @@ const ColumnsModal = ({
 }) => {
   const options = [
     {
-      label: "Unit sold",
-      value: "Unit sold",
-    },
-    {
-      label: "Refunds",
-      value: "Refunds",
-    },
-    {
       label: "Sales",
       value: "Sales",
+    },
+    {
+      label: "Unit sold",
+      value: "Unit sold",
     },
     {
       label: "Promo",
       value: "Promo",
     },
     {
-      label: "Sellable returns",
-      value: "Sellable returns",
+      label: "Takealot fee",
+      value: "Takealot fee",
+    },
+    {
+      label: "Expense",
+      value: "Expense",
     },
     {
       label: "Refund cost",
       value: "Refund cost",
     },
     {
-      label: "Takealot fee",
-      value: "Takealot fee",
+      label: "Refunds",
+      value: "Refunds",
+    },
+    {
+      label: "Gross profit",
+      value: "Gross profit",
     },
     {
       label: "Cost of goods",
       value: "Cost of goods",
     },
     {
-      label: "Gross profit",
-      value: "Gross profit",
+      label: "Net profit",
+      value: "Net profit",
     },
     {
       label: "Margin",
@@ -79,11 +83,12 @@ const ColumnsModal = ({
             String(record.tsin).includes(value)
           );
         },
-        width: "30px",
+        width: "400px",
         dataIndex: "product",
         render: (_, record) => (
           <ProductDetails record={record} essentials={essentials} />
         ),
+        fixed: "left",
       },
     ];
     let newOrderItemColumns = [
@@ -131,6 +136,8 @@ const ColumnsModal = ({
             String(record.tsin).toLowerCase().includes(value.toLowerCase())
           );
         },
+        fixed: "left",
+        width: "150px",
       },
       {
         title: (
@@ -138,7 +145,7 @@ const ColumnsModal = ({
             <span className="text-[11px] text-[#777777]">Product</span>
           </div>
         ),
-        width: "400px",
+        width: "350px",
         dataIndex: "product",
         render: (_, record) => (
           <div className="flex items-center">
@@ -187,6 +194,7 @@ const ColumnsModal = ({
             </div>
           </div>
         ),
+        fixed: "left",
       },
     ];
     if (e?.includes("Unit sold")) {
@@ -223,6 +231,43 @@ const ColumnsModal = ({
           </div>
         ),
       });
+    }
+    if (e?.includes("Expense")) {
+      newColumns.push({
+        title: (
+          <div className="flex items-center space-x-4 justify-center">
+            <span className="text-[11px] text-[#777777] text-center">
+              Expense
+            </span>
+          </div>
+        ),
+        sorter: (a, b) => a.expense - b.expense,
+        dataIndex: "expense",
+        key: "expense",
+        render: (_, record) => (
+          <div className="w-full flex justify-center items-center">
+            <span className="text-[11px] text-center">
+              {record?.expense ? record?.expense : "-"}
+            </span>
+          </div>
+        ),
+      });
+
+      // newOrderItemColumns.push({
+      //   title: (
+      //     <div className="flex items-center space-x-4 justify-center">
+      //       <span className="text-[11px] text-[#777777] text-center">
+      //         Units Sold
+      //       </span>
+      //     </div>
+      //   ),
+      //   dataIndex: "unitSold",
+      //   render: (_, record) => (
+      //     <div className="w-full flex justify-center items-center">
+      //       <span className="text-[11px] text-center">{record?.quantity}</span>
+      //     </div>
+      //   ),
+      // });
     }
 
     if (e?.includes("Sales")) {
@@ -438,49 +483,6 @@ const ColumnsModal = ({
       });
     }
 
-    if (e?.includes("Sellable returns")) {
-      newColumns.push({
-        title: (
-          <div className="flex items-center justify-center space-x-4">
-            <span className="text-[11px] text-[#777777] text-center">
-              Sellable returns
-            </span>
-          </div>
-        ),
-        dataIndex: "sellableReturns",
-        sorter: (a, b) => a.sellableReturns - b.sellableReturns,
-        render: (_, record) => (
-          <div className="w-full flex items-center justify-center">
-            <div className="w-full flex items-center justify-center">
-              <span className="text-[11px] text-center">
-                {record?.sellableReturns}
-              </span>
-            </div>
-          </div>
-        ),
-      });
-
-      newOrderItemColumns.push({
-        title: (
-          <div className="flex items-center justify-center space-x-4">
-            <span className="text-[11px] text-[#777777] text-center">
-              Sellable returns
-            </span>
-          </div>
-        ),
-        dataIndex: "sellableReturns",
-        render: (_, record) => (
-          <div className="w-full flex items-center justify-center">
-            <div className="w-full flex items-center justify-center">
-              <span className="text-[11px] text-center">
-                {record?.sellableReturns}
-              </span>
-            </div>
-          </div>
-        ),
-      });
-    }
-
     if (e?.includes("Cost of goods")) {
       newColumns.push({
         title: (
@@ -495,7 +497,9 @@ const ColumnsModal = ({
         render: (_, record) => (
           <div className="w-full flex items-center justify-center">
             <div className="w-full flex items-center justify-center">
-              <span className="text-[11px] text-center">R {record?.cog}</span>
+              <span className="text-[11px] text-center">
+                R {(record?.cog * Number(record?.unitSold)).toFixed(2)}
+              </span>
             </div>
           </div>
         ),
@@ -513,7 +517,9 @@ const ColumnsModal = ({
         render: (_, record) => (
           <div className="w-full flex items-center justify-center">
             <div className="w-full flex items-center justify-center">
-              <span className="text-[11px] text-center">-</span>
+              <span className="text-[11px] text-center">
+                R {(record?.cog * Number(record?.quantity)).toFixed(2)}
+              </span>
             </div>
           </div>
         ),
@@ -632,7 +638,14 @@ const ColumnsModal = ({
         render: (_, record) => (
           <div className="w-full flex items-center justify-center">
             <div className="w-full flex items-center justify-center">
-              <span className="text-[11px] text-center">-</span>
+              <span className="text-[11px] text-center">
+                {(
+                  ((record?.sales - record?.fee - record?.cog) /
+                    record?.sales) *
+                  100
+                ).toFixed(2)}
+                %
+              </span>
             </div>
           </div>
         ),

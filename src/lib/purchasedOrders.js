@@ -143,7 +143,11 @@ const getPurchasedOrder = async (id) => {
 
 const getPurchasedOrderByStatus = async (status) => {
   const ref = collection(db, "purchased-orders");
-  const q = query(ref, where("status", "==", status));
+  const q = query(
+    ref,
+    where("status", "in", status),
+    where("changeOrderedColumn", "==", true)
+  );
   const res = await getDocs(q);
   const data = [];
   res.docs?.forEach((doc) => {
@@ -181,7 +185,7 @@ const purchasedOrdersApi = {
   getPurchasedOrdersByDate,
   getPurchasedOrdersByDateRange,
   getPurchasedOrder,
-  getPurchasedOrderByStatus
+  getPurchasedOrderByStatus,
 };
 
 export default purchasedOrdersApi;

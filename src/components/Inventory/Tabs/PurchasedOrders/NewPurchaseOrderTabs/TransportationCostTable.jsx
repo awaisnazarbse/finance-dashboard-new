@@ -42,10 +42,17 @@ const EditableCell = ({
     try {
       const values = await form.validateFields();
       const found = transportationCostData?.find((e) => e?.key === record?.key);
-      const updatedData = {
+      let updatedData = {
         ...found,
         ...values,
       };
+      if(dataIndex === "amount"){
+        updatedData = {
+          ...found,
+          ...values,
+          amount: Number(values?.amount)
+        }
+      }
       console.log("updatedData", updatedData);
       toggleEdit();
       handleSave(updatedData);
@@ -63,10 +70,15 @@ const EditableCell = ({
         name={dataIndex}
       >
         <Input
-          className="text-[10px] font-medium w-full"
+         className="text-[10px] font-medium min-w-[3rem]"
           ref={inputRef}
           onPressEnter={save}
           onBlur={save}
+          style={{
+            minHeight: "2.5rem",
+            border: "1px solid #FAFAFA",
+            borderRadius: "0px",
+          }}
         />
       </Form.Item>
     ) : (
@@ -161,37 +173,37 @@ const TransportationCostTable = ({
       ),
       editable: true,
     },
-    {
-      title: (
-        <div className="flex items-center space-x-4">
-          <span className="text-[10px] font-light text-[#777777]">
-            Currency
-          </span>
-        </div>
-      ),
-      dataIndex: "currency",
-      render: (_, record) => (
-        <div className="w-full flex items-center py-3">
-          <Select
-            options={[
-              { label: "$", value: "$" },
-              { label: "R", value: "R" },
-            ]}
-            className="text-[#777777] text-[10px] outline-none focus:outline-none border focus:border-none w-52"
-            value={record?.currency}
-            onSelect={(e) => {
-              const updatedData = {
-                ...record,
-                currency: e,
-              };
+    // {
+    //   title: (
+    //     <div className="flex items-center space-x-4">
+    //       <span className="text-[10px] font-light text-[#777777]">
+    //         Currency
+    //       </span>
+    //     </div>
+    //   ),
+    //   dataIndex: "currency",
+    //   render: (_, record) => (
+    //     <div className="w-full flex items-center py-3">
+    //       <Select
+    //         options={[
+    //           { label: "$", value: "$" },
+    //           { label: "R", value: "R" },
+    //         ]}
+    //         className="text-[#777777] text-[10px] outline-none focus:outline-none border focus:border-none w-52"
+    //         value={record?.currency}
+    //         onSelect={(e) => {
+    //           const updatedData = {
+    //             ...record,
+    //             currency: e,
+    //           };
 
-              handleSave(updatedData);
-            }}
-            bordered={false}
-          />
-        </div>
-      ),
-    },
+    //           handleSave(updatedData);
+    //         }}
+    //         bordered={false}
+    //       />
+    //     </div>
+    //   ),
+    // },
     {
       title: (
         <div className="flex items-center space-x-4">

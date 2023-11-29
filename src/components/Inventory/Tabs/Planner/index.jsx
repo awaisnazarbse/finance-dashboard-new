@@ -23,7 +23,7 @@ const Planner = ({ userApiKeys }) => {
       });
 
       const purchaseOrders = await purchasedOrdersApi.getPurchasedOrderByStatus(
-        "Ordered"
+        ["Ordered", "Shipped"]
       );
 
       console.log("offers in planner", res.data);

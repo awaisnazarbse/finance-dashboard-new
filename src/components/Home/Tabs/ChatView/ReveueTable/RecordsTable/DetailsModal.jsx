@@ -152,13 +152,6 @@ const DetailsModal = (props) => {
         />
         <hr />
         <Row
-          title="Sellable Returns"
-          value="-"
-          type="body"
-          info={info.SELLABLE_RETURN}
-        />
-        <hr />
-        <Row
           title="Margin"
           value={`${(
             ((props?.data?.sales - props?.data?.fee) / props?.data?.sales) *

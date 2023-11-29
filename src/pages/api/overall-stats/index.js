@@ -3,13 +3,46 @@ import offersApi from "@/lib/offers";
 import userApi from "@/lib/user";
 import getAllSalesByProduct from "@/utils/getAllSalesByProduct";
 import getAllSalesNew from "@/utils/getAllSalesNew";
+import getAllTransactions from "@/utils/getAllTransactions";
 import getCog from "@/utils/getCog";
+import getCogNew from "@/utils/getCogNew";
 import dayjs from "dayjs";
 
 export default async function handler(req, res) {
   const body = JSON.parse(req.body);
   try {
     let cogs = 0;
+    let adCreditFee = 0;
+    let subscriptionFee = 0;
+    let storageFee = 0;
+    let manualReversalFee = 0;
+    let transactions = [];
+    // if (body?.duration !== "This Year") {
+    //   const transactions = await getAllTransactions(
+    //     dayjs(body?.startDate).format("YYYY-MM-DD"),
+    //     dayjs(body?.endDate).format("YYYY-MM-DD"),
+    //     "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5",
+    //     true
+    //   );
+    //   console.log("transactions leng", transactions.length);
+    //   if (transactions?.length > 0) {
+    //     transactions.forEach((e) => {
+    //       if (e?.transaction_type?.description === "Ad Credit Purchase") {
+    //         adCreditFee += Number(e?.inc_vat);
+    //       } else if (
+    //         e?.transaction_type?.description === "Subscription Fee Charge"
+    //       ) {
+    //         subscriptionFee += Number(e?.inc_vat);
+    //       } else if (
+    //         e?.transaction_type?.description === "Storage Fee Charge"
+    //       ) {
+    //         storageFee += Number(e?.inc_vat);
+    //       } else if (e?.transaction_type?.description === "Manual Reversal") {
+    //         manualReversalFee += Number(e?.inc_vat);
+    //       }
+    //     });
+    //   }
+    // }
     if (body?.marketplace === "All market places") {
       const userApis = await userApi.getActiveUserAPIKeys(body?.uid);
       let totalRevenue = 0;
@@ -48,10 +81,28 @@ export default async function handler(req, res) {
               dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
               userApis[it]?.apiKey
             );
+            let first6MonthsTransactions = await getAllTransactions(
+              dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+              dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+              userApis[it]?.apiKey
+            );
+            let second6MonthsTransactions = await getAllTransactions(
+              dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+              dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+              userApis[it]?.apiKey
+            );
 
             sales = first6MonthsSales?.concat(second6MonthsSales);
+            transactions = first6MonthsTransactions?.concat(
+              second6MonthsTransactions
+            );
           } else {
             sales = await getAllSalesNew(
+              dayjs(body?.startDate).format("YYYY-MM-DD"),
+              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              userApis[it]?.apiKey
+            );
+            transactions = await getAllTransactions(
               dayjs(body?.startDate).format("YYYY-MM-DD"),
               dayjs(body?.endDate).format("YYYY-MM-DD"),
               userApis[it]?.apiKey
@@ -68,9 +119,8 @@ export default async function handler(req, res) {
             takealotFee += e?.total_fee;
             if (e?.sale_status === "Returned") {
               returnTotal += e?.quantity;
-              returnCost += e?.selling_price;
+              returnCost += e?.selling_price - e?.total_fee;
             }
-            console.log("dc..", e?.dc);
             if (e?.dc === "JHB") {
               if (
                 e?.sale_status !== "Cancelled by Customer" &&
@@ -82,7 +132,7 @@ export default async function handler(req, res) {
               jhbTakealotFee += e?.total_fee;
               if (e?.sale_status === "Returned") {
                 jhbReturnTotal += e?.quantity;
-                jhbReturnCost += e?.selling_price;
+                jhbReturnCost += e?.selling_price - e?.total_fee;
               }
             }
 
@@ -97,7 +147,7 @@ export default async function handler(req, res) {
               cptTakealotFee += e?.total_fee;
               if (e?.sale_status === "Returned") {
                 cptReturnTotal += e?.quantity;
-                cptReturnCost += e?.selling_price;
+                cptReturnCost += e?.selling_price - e?.total_fee;
               }
             }
           });
@@ -157,7 +207,7 @@ export default async function handler(req, res) {
             takealotFee += e?.total_fee;
             if (e?.sale_status === "Returned") {
               returnTotal += e?.quantity;
-              returnCost += e?.selling_price;
+              returnCost += e?.selling_price - e?.total_fee;
             }
             if (e?.dc === "JHB") {
               if (
@@ -170,7 +220,7 @@ export default async function handler(req, res) {
               jhbTakealotFee += e?.total_fee;
               if (e?.sale_status === "Returned") {
                 jhbReturnTotal += e?.quantity;
-                jhbReturnCost += e?.selling_price;
+                jhbReturnCost += e?.selling_price - e?.total_fee;
               }
             }
 
@@ -185,7 +235,7 @@ export default async function handler(req, res) {
               cptTakealotFee += e?.total_fee;
               if (e?.sale_status === "Returned") {
                 cptReturnTotal += e?.quantity;
-                cptReturnCost += e?.selling_price;
+                cptReturnCost += e?.selling_price - e?.total_fee;
               }
             }
           });
@@ -219,11 +269,30 @@ export default async function handler(req, res) {
         }
       }
 
+      if (transactions?.length > 0) {
+        transactions.forEach((e) => {
+          if (e?.transaction_type?.description === "Ad Credit Purchase") {
+            adCreditFee += Number(e?.inc_vat);
+          } else if (
+            e?.transaction_type?.description === "Subscription Fee Charge"
+          ) {
+            subscriptionFee += Number(e?.inc_vat);
+          } else if (
+            e?.transaction_type?.description === "Storage Fee Charge"
+          ) {
+            storageFee += Number(e?.inc_vat);
+          } else if (e?.transaction_type?.description === "Manual Reversal") {
+            manualReversalFee += Number(e?.inc_vat);
+          }
+        });
+      }
+
       res.status(200).json({
         totalRevenue,
-        takealotFee,
+        takealotFee: takealotFee + manualReversalFee,
         unitSold,
-        totalExpenses,
+        totalExpenses:
+          totalExpenses + storageFee + subscriptionFee + adCreditFee,
         cptRevenue,
         jhbRevenue,
         cptTakealotFee,
@@ -237,10 +306,13 @@ export default async function handler(req, res) {
         jhbReturnTotal,
         jhbReturnCost,
         cogs,
+        storageFee,
+        manualReversalFee,
+        subscriptionFee,
+        adCreditFee,
       });
     } else {
       const API_TOKEN = body?.marketplace;
-      console.log("API_TOKEN in overall new", API_TOKEN)
       if (body?.productTitle === "") {
         let sales = [];
         if (body?.duration === "This Year") {
@@ -253,15 +325,28 @@ export default async function handler(req, res) {
           let first6MonthsSales = await getAllSalesNew(
             dayjs(first6MonthsStart).format("YYYY-MM-DD"),
             dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-            API_TOKEN
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
           let second6MonthsSales = await getAllSalesNew(
             dayjs(second6MonthsStart).format("YYYY-MM-DD"),
             dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-            API_TOKEN
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          );
+          let first6MonthsTransactions = await getAllTransactions(
+            dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+            dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          );
+          let second6MonthsTransactions = await getAllTransactions(
+            dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+            dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
 
           sales = first6MonthsSales?.concat(second6MonthsSales);
+          transactions = first6MonthsTransactions?.concat(
+            second6MonthsTransactions
+          );
         } else {
           console.log(
             "start date chart view cards:",
@@ -272,6 +357,11 @@ export default async function handler(req, res) {
             dayjs(body?.endDate).format("YYYY-MM-DD")
           );
           sales = await getAllSalesNew(
+            dayjs(body?.startDate).format("YYYY-MM-DD"),
+            dayjs(body?.endDate).format("YYYY-MM-DD"),
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          );
+          transactions = await getAllTransactions(
             dayjs(body?.startDate).format("YYYY-MM-DD"),
             dayjs(body?.endDate).format("YYYY-MM-DD"),
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
@@ -293,12 +383,25 @@ export default async function handler(req, res) {
         let cptReturnCost = 0;
         let jhbReturnTotal = 0;
         let jhbReturnCost = 0;
+        let cogs = 0;
 
+        const offerIds = [...new Set(sales?.map((sale) => sale.offer_id))];
+        // cogs = await getCog(offerIds);
+        // const offersCogs = await offersApi.getOfferCogsByOfferIds(offerIds);
+        const offersCogs = await getCogNew(offerIds);
         sales?.forEach((e) => {
+          const foundOfferCog = offersCogs?.find(
+            (cog) => cog?.offer_id === e?.offer_id
+          );
+          if (foundOfferCog) {
+            const newCog = e?.quantity * foundOfferCog?.cog;
+            cogs += newCog;
+          }
           if (
             e?.sale_status !== "Cancelled by Customer" &&
             e?.sale_status !== "Cancelled by Takealot"
           ) {
+            console.log("totalRevenue", totalRevenue);
             totalRevenue += e?.selling_price;
             unitSold += e?.quantity;
           }
@@ -306,7 +409,7 @@ export default async function handler(req, res) {
           if (e?.sale_status === "Returned") {
             // console.log("return total", e?.selling_price);
             returnTotal += e?.quantity;
-            returnCost += e?.selling_price;
+            returnCost += e?.selling_price - e?.total_fee;
           }
           if (e?.dc === "JHB") {
             if (
@@ -321,7 +424,7 @@ export default async function handler(req, res) {
               // console.log("return dc", e?.selling_price);
 
               jhbReturnTotal += e?.quantity;
-              jhbReturnCost += e?.selling_price;
+              jhbReturnCost += e?.selling_price - e?.total_fee;
             }
           }
 
@@ -337,7 +440,7 @@ export default async function handler(req, res) {
             if (e?.sale_status === "Returned") {
               // console.log("return dc", e?.selling_price);
               cptReturnTotal += e?.quantity;
-              cptReturnCost += e?.selling_price;
+              cptReturnCost += e?.selling_price - e?.total_fee;
             }
           }
         });
@@ -349,31 +452,8 @@ export default async function handler(req, res) {
         expenses?.forEach((expense) => {
           totalExpenses = totalExpenses + expense?.amount;
         });
-        const offerIds = [...new Set(sales?.map((sale) => sale.offer_id))];
-        // if (offerIds.length > 0) {
-        //   cogs = await offersApi.getOfferCOGsByOfferIds(offerIds);
-        // }
-        cogs = await getCog(offerIds);
-        // console.log("data in api", {
-        //   totalRevenue,
-        //   takealotFee,
-        //   unitSold,
-        //   totalExpenses,
-        //   cptRevenue,
-        //   jhbRevenue,
-        //   cptTakealotFee,
-        //   jhbTakealotFee,
-        //   cptUnitSold,
-        //   jhbUnitSold,
-        //   returnTotal,
-        //   returnCost,
-        //   cptReturnTotal,
-        //   cptReturnCost,
-        //   jhbReturnTotal,
-        //   jhbReturnCost,
-        //   cogs,
-        // });
-        res.status(200).json({
+
+        console.log("data in api", {
           totalRevenue,
           takealotFee,
           unitSold,
@@ -391,6 +471,49 @@ export default async function handler(req, res) {
           jhbReturnTotal,
           jhbReturnCost,
           cogs,
+        });
+
+        if (transactions?.length > 0) {
+          transactions.forEach((e) => {
+            if (e?.transaction_type?.description === "Ad Credit Purchase") {
+              adCreditFee += Number(e?.inc_vat);
+            } else if (
+              e?.transaction_type?.description === "Subscription Fee Charge"
+            ) {
+              subscriptionFee += Number(e?.inc_vat);
+            } else if (
+              e?.transaction_type?.description === "Storage Fee Charge"
+            ) {
+              storageFee += Number(e?.inc_vat);
+            } else if (e?.transaction_type?.description === "Manual Reversal") {
+              manualReversalFee += Number(e?.inc_vat);
+            }
+          });
+        }
+
+        res.status(200).json({
+          totalRevenue,
+          takealotFee: takealotFee + manualReversalFee,
+          unitSold,
+          totalExpenses:
+            totalExpenses + storageFee + subscriptionFee + adCreditFee,
+          cptRevenue,
+          jhbRevenue,
+          cptTakealotFee,
+          jhbTakealotFee,
+          cptUnitSold,
+          jhbUnitSold,
+          returnTotal,
+          returnCost,
+          cptReturnTotal,
+          cptReturnCost,
+          jhbReturnTotal,
+          jhbReturnCost,
+          cogs,
+          storageFee,
+          manualReversalFee,
+          subscriptionFee,
+          adCreditFee,
         });
       } else {
         let sales = [];
@@ -454,7 +577,7 @@ export default async function handler(req, res) {
           takealotFee += e?.total_fee;
           if (e?.sale_status === "Returned") {
             returnTotal += e?.quantity;
-            returnCost += e?.selling_price;
+            returnCost += e?.selling_price - e?.total_fee;
           }
           if (e?.dc === "JHB") {
             if (
@@ -467,7 +590,7 @@ export default async function handler(req, res) {
             jhbTakealotFee += e?.total_fee;
             if (e?.sale_status === "Returned") {
               jhbReturnTotal += e?.quantity;
-              jhbReturnCost += e?.selling_price;
+              jhbReturnCost += e?.selling_price - e?.total_fee;
             }
           }
 
@@ -482,7 +605,7 @@ export default async function handler(req, res) {
             cptTakealotFee += e?.total_fee;
             if (e?.sale_status === "Returned") {
               cptReturnTotal += e?.quantity;
-              cptReturnCost += e?.selling_price;
+              cptReturnCost += e?.selling_price - e?.total_fee;
             }
           }
         });
@@ -496,11 +619,30 @@ export default async function handler(req, res) {
         });
         cogs = await offersApi.getOfferCOGByTitle(body?.productTitle);
 
+        if (transactions?.length > 0) {
+          transactions.forEach((e) => {
+            if (e?.transaction_type?.description === "Ad Credit Purchase") {
+              adCreditFee += Number(e?.inc_vat);
+            } else if (
+              e?.transaction_type?.description === "Subscription Fee Charge"
+            ) {
+              subscriptionFee += Number(e?.inc_vat);
+            } else if (
+              e?.transaction_type?.description === "Storage Fee Charge"
+            ) {
+              storageFee += Number(e?.inc_vat);
+            } else if (e?.transaction_type?.description === "Manual Reversal") {
+              manualReversalFee += Number(e?.inc_vat);
+            }
+          });
+        }
+
         res.status(200).json({
           totalRevenue,
-          takealotFee,
+          takealotFee: takealotFee + manualReversalFee,
           unitSold,
-          totalExpenses,
+          totalExpenses:
+            totalExpenses + storageFee + subscriptionFee + adCreditFee,
           cptRevenue,
           jhbRevenue,
           cptTakealotFee,
@@ -514,6 +656,10 @@ export default async function handler(req, res) {
           jhbReturnTotal,
           jhbReturnCost,
           cogs,
+          storageFee,
+          manualReversalFee,
+          subscriptionFee,
+          adCreditFee,
         });
       }
     }

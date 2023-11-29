@@ -160,13 +160,6 @@ const OrderItemsDetailsModal = (props) => {
           type="body"
           info={info.PERCENT_RETURN}
         />
-        {/* <hr />
-        <Row
-          title="Sellable Returns"
-          value="-"
-          type="body"
-          info={info.SELLABLE_RETURN}
-        /> */}
         <hr />
         <Row
           title="Margin"

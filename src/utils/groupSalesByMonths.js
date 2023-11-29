@@ -2,7 +2,7 @@ import expensesApi from "@/lib/expense";
 import offersApi from "@/lib/offers";
 import dayjs from "dayjs";
 
-async function groupSalesByMonths(salesArray) {
+async function groupSalesByMonths(salesArray, transactions) {
   // const groupedSales = {};
 
   // // Iterate through each sale
@@ -109,15 +109,24 @@ async function groupSalesByMonths(salesArray) {
     "Sales",
     "Units Sold",
     "Returns",
+    "Return Cost",
     "Promo",
     "Estimated Payout",
     "Cost of Goods",
     "Takealot Fee",
+    "Success Fee",
+    "Courier Collection Fee",
+    "AutoIbt Fee",
+    "Fulfillment Fee",
     "Gross Profit",
     "Expenses",
     "Net Profit",
     "Margin",
     "ROI",
+    "Ad Credit Purchase",
+    "Subscription Fee Charge",
+    "Storage Fee Charge",
+    "Manual Reversal",
   ];
   const groupedData = {};
 
@@ -136,6 +145,7 @@ async function groupSalesByMonths(salesArray) {
 
   // console.log("groupedData",groupedData);
   let cols = [];
+  let cols1 = [];
   for (let i = 0; i < 12; i++) {
     const monthDate = currentDate.subtract(i, "month");
     const startDate = monthDate.startOf("month");
@@ -147,6 +157,15 @@ async function groupSalesByMonths(salesArray) {
         (saleDate.isAfter(startDate) && saleDate.isBefore(endDate)) ||
         saleDate.isSame(startDate) ||
         saleDate.isSame(endDate)
+      );
+    });
+    const filteredTransactions = transactions.filter((trans) => {
+      const transactionDate = dayjs(trans?.date_created);
+      return (
+        (transactionDate.isAfter(startDate) &&
+          transactionDate.isBefore(endDate)) ||
+        transactionDate.isSame(startDate) ||
+        transactionDate.isSame(endDate)
       );
     });
 
@@ -186,6 +205,37 @@ async function groupSalesByMonths(salesArray) {
     // console.log("monthKey", monthKey);
     groupedData.Expenses[monthKey] = totalExpenses;
     groupedData["Cost of Goods"][monthKey] = cog;
+    let adCreditFee = 0;
+    let subscriptionFee = 0;
+    let storageFee = 0;
+    let manualReversalFee = 0;
+
+    if (filteredTransactions?.length > 0) {
+      filteredTransactions.forEach((e) => {
+        if (e?.transaction_type?.description === "Ad Credit Purchase") {
+          adCreditFee += Number(e?.inc_vat);
+        } else if (
+          e?.transaction_type?.description === "Subscription Fee Charge"
+        ) {
+          subscriptionFee += Number(e?.inc_vat);
+        } else if (e?.transaction_type?.description === "Storage Fee Charge") {
+          storageFee += Number(e?.inc_vat);
+        } else if (e?.transaction_type?.description === "Manual Reversal") {
+          manualReversalFee += Number(e?.inc_vat);
+        }
+      });
+    }
+
+    groupedData["Ad Credit Purchase"][monthKey] = adCreditFee;
+    groupedData["Subscription Fee Charge"][monthKey] = subscriptionFee;
+    groupedData["Storage Fee Charge"][monthKey] = storageFee;
+    groupedData["Manual Reversal"][monthKey] = manualReversalFee;
+
+    cols1.push({
+      title: monthKey,
+      start: dayjs(startDate).format("YYYY-MM-DD"),
+      end: dayjs(endDate).format("YYYY-MM-DD"),
+    });
     cols.push(monthKey);
   }
 
@@ -200,13 +250,35 @@ async function groupSalesByMonths(salesArray) {
 
       if (groupedData[parameter].hasOwnProperty(monthKey)) {
         if (parameter === "Sales") {
-          groupedData[parameter][monthKey] += sale?.selling_price;
+          if (
+            sale?.sale_status !== "Cancelled by Customer" &&
+            sale?.sale_status !== "Cancelled by Takealot"
+          ) {
+            groupedData[parameter][monthKey] += sale?.selling_price;
+          }
         }
         if (parameter === "Units Sold") {
-          groupedData[parameter][monthKey] += sale?.quantity;
+          if (
+            sale?.sale_status !== "Cancelled by Customer" &&
+            sale?.sale_status !== "Cancelled by Takealot"
+          ) {
+            groupedData[parameter][monthKey] += sale?.quantity;
+          }
         }
         if (parameter === "Takealot Fee") {
           groupedData[parameter][monthKey] += sale?.total_fee;
+        }
+        if (parameter === "Success Fee") {
+          groupedData[parameter][monthKey] += sale.success_fee;
+        }
+        if (parameter === "Courier Collection Fee") {
+          groupedData[parameter][monthKey] += sale.courier_collection_fee;
+        }
+        if (parameter === "AutoIbt Fee") {
+          groupedData[parameter][monthKey] += sale.auto_ibt_fee;
+        }
+        if (parameter === "Fulfillment Fee") {
+          groupedData[parameter][monthKey] += sale.fulfillment_fee;
         }
         if (parameter === "Estimated Payout") {
           groupedData[parameter][monthKey] =
@@ -217,7 +289,8 @@ async function groupSalesByMonths(salesArray) {
         if (parameter === "Gross Profit") {
           groupedData[parameter][monthKey] =
             groupedData["Sales"][monthKey] -
-            groupedData["Takealot Fee"][monthKey];
+            groupedData["Takealot Fee"][monthKey] -
+            groupedData["Return Cost"][monthKey];
         }
 
         // const netProfit = grossProfit - data?.expenses;
@@ -245,26 +318,54 @@ async function groupSalesByMonths(salesArray) {
           groupedData[parameter][monthKey] += sale?.quantity;
         }
 
-        if (sale?.sale_status?.includes("Return") && parameter === "Returns") {
+        if (sale?.sale_status === "Returned" && parameter === "Returns") {
           groupedData[parameter][monthKey] += sale.quantity;
+        }
+        if (sale?.sale_status === "Returned" && parameter === "Return Cost") {
+          groupedData[parameter][monthKey] +=
+            sale.selling_price - sale?.total_fee;
         }
       }
     });
   });
 
   const result = parameters.map((parameter) => {
-    const parameterData = {
-      parameter,
-    };
-    Object.entries(groupedData[parameter]).forEach(([month, value]) => {
-      // console.log("month in last", month);
-      // console.log("value in last", value);
-      parameterData[month] = value;
-    });
-    return parameterData;
+    if (
+      parameter !== "Success Fee" &&
+      parameter !== "Fulfillment Fee" &&
+      parameter !== "AutoIbt Fee" &&
+      parameter !== "Courier Collection Fee"
+    ) {
+      const parameterData = {
+        parameter,
+      };
+      Object.entries(groupedData[parameter]).forEach(([month, value]) => {
+        // console.log("month in last", month);
+        // console.log("value in last", value);
+        parameterData[month] = value;
+      });
+
+      if (parameter === "Takealot Fee") {
+        parameterData.children = [
+          { parameter: "Success Fee", ...groupedData["Success Fee"] },
+          { parameter: "Fulfillment Fee", ...groupedData["Fulfillment Fee"] },
+          { parameter: "AutoIbt Fee", ...groupedData["AutoIbt Fee"] },
+          {
+            parameter: "Courier Collection Fee",
+            ...groupedData["Courier Collection Fee"],
+          },
+          { parameter: "Manual Reversal", ...groupedData["Manual Reversal"] },
+        ];
+      }
+
+      return parameterData;
+    }
   });
 
-  return { result, cols };
+  return {
+    result: result?.filter((value) => value !== undefined),
+    cols: cols1,
+  };
 }
 
 async function groupSalesByWeeks(salesArray) {
@@ -272,10 +373,15 @@ async function groupSalesByWeeks(salesArray) {
     "Sales",
     "Units Sold",
     "Returns",
+    "Return Cost",
     "Promo",
     "Estimated Payout",
     "Cost of Goods",
     "Takealot Fee",
+    "Success Fee",
+    "Courier Collection Fee",
+    "AutoIbt Fee",
+    "Fulfillment Fee",
     "Gross Profit",
     "Expenses",
     "Net Profit",
@@ -301,6 +407,7 @@ async function groupSalesByWeeks(salesArray) {
   // Create a map to store the weekly data
   const groupedData = {};
   const cols = [];
+  const cols1 = [];
 
   // Iterate over the last 12 weeks
   let currentWeekStart = last3MonthsStartDate.clone().startOf("week");
@@ -344,7 +451,7 @@ async function groupSalesByWeeks(salesArray) {
   // );
 
   thisYearWeeks.forEach(async (e) => {
-    const weekKey = e?.weekKey;
+    const weekKey = e?.title;
     const weekStart = dayjs(e?.start, "YYYY-MM-DD");
     const weekEnd = dayjs(e?.end, "YYYY-MM-DD");
     parameters.forEach((parameter) => {
@@ -390,6 +497,7 @@ async function groupSalesByWeeks(salesArray) {
     console.log("uniqueOfferIds", uniqueOfferIds);
     groupedData["Cost of Goods"][weekKey] = cog;
 
+    cols1.push(e);
     cols.push(weekKey);
   });
 
@@ -397,8 +505,8 @@ async function groupSalesByWeeks(salesArray) {
   const threeMonthsAgo = today.subtract(3, "month");
 
   const expenses = await expensesApi.getExpensesByDateRange({
-    start: threeMonthsAgo.format("DD/MM/YY"),
-    end: today.format("DD/MM/YY"),
+    start: threeMonthsAgo.format("DD MMM YYYY"),
+    end: today.format("DD MMM YYYY"),
   });
   let weekNumberExpenses = 1;
   expenses.forEach((expense) => {
@@ -421,24 +529,47 @@ async function groupSalesByWeeks(salesArray) {
         saleDate.isSame(dayjs(week?.end, "YYYY-MM-DD"))
     );
     if (week) {
-      const weekKey = week?.weekKey;
+      const weekKey = week?.title;
 
       parameters.forEach((parameter) => {
         if (parameter === "Expenses") return;
         if (groupedData[parameter][weekKey] !== undefined) {
           if (parameter === "Sales") {
-            groupedData[parameter][weekKey] += sale.selling_price;
+            if (
+              sale?.sale_status !== "Cancelled by Customer" &&
+              sale?.sale_status !== "Cancelled by Takealot"
+            ) {
+              groupedData[parameter][weekKey] += sale.selling_price;
+            }
           }
           if (parameter === "Units Sold") {
-            groupedData[parameter][weekKey] += sale.quantity;
+            if (
+              sale?.sale_status !== "Cancelled by Customer" &&
+              sale?.sale_status !== "Cancelled by Takealot"
+            ) {
+              groupedData[parameter][weekKey] += sale.quantity;
+            }
           }
           if (parameter === "Takealot Fee") {
             groupedData[parameter][weekKey] += sale.total_fee;
           }
+          if (parameter === "Success Fee") {
+            groupedData[parameter][weekKey] += sale.success_fee;
+          }
+          if (parameter === "Courier Collection Fee") {
+            groupedData[parameter][weekKey] += sale.courier_collection_fee;
+          }
+          if (parameter === "AutoIbt Fee") {
+            groupedData[parameter][weekKey] += sale.auto_ibt_fee;
+          }
+          if (parameter === "Fulfillment Fee") {
+            groupedData[parameter][weekKey] += sale.fulfillment_fee;
+          }
           if (parameter === "Gross Profit") {
             groupedData[parameter][weekKey] =
               groupedData["Sales"][weekKey] -
-              groupedData["Takealot Fee"][weekKey];
+              groupedData["Takealot Fee"][weekKey] -
+              groupedData["Return Cost"][weekKey];
           }
           if (parameter === "Net Profit") {
             groupedData[parameter][weekKey] =
@@ -467,11 +598,12 @@ async function groupSalesByWeeks(salesArray) {
             groupedData[parameter][weekKey] += sale.quantity;
           }
 
-          if (
-            sale?.sale_status?.includes("Return") &&
-            parameter === "Returns"
-          ) {
+          if (sale?.sale_status === "Returned" && parameter === "Returns") {
             groupedData[parameter][weekKey] += sale.quantity;
+          }
+          if (sale?.sale_status === "Returned" && parameter === "Return Cost") {
+            groupedData[parameter][weekKey] +=
+              sale.selling_price - sale?.total_fee;
           }
         }
       });
@@ -480,17 +612,62 @@ async function groupSalesByWeeks(salesArray) {
   });
 
   // Create the result array
+  // const result = parameters.map((parameter) => {
+  //   const parameterData = { parameter };
+  //   cols.forEach((weekKey) => {
+  //     parameterData[weekKey] = groupedData[parameter][weekKey];
+  //   });
+  //   return parameterData;
+  // });
+  // const result = parameters.map((parameter) => {
+  //   const parameterData = { parameter };
+  //   cols.forEach((weekKey) => {
+  //     parameterData[weekKey] = groupedData[parameter][weekKey];
+  //   });
+
+  //   // Check if the parameter is "Takealot Fee"
+  //   if (parameter === "Takealot Fee") {
+  //     // Add a children array or any other modifications you need
+  //     parameterData.children = []; // You can initialize it as an empty array or with some default values
+  //   }
+
+  //   return parameterData;
+  // });
+
   const result = parameters.map((parameter) => {
-    const parameterData = { parameter };
-    cols.forEach((weekKey) => {
-      parameterData[weekKey] = groupedData[parameter][weekKey];
-    });
-    return parameterData;
+    if (
+      parameter !== "Success Fee" &&
+      parameter !== "Fulfillment Fee" &&
+      parameter !== "AutoIbt Fee" &&
+      parameter !== "Courier Collection Fee"
+    ) {
+      const parameterData = { parameter };
+      cols.forEach((weekKey) => {
+        parameterData[weekKey] = groupedData[parameter][weekKey];
+      });
+
+      if (parameter === "Takealot Fee") {
+        parameterData.children = [
+          { parameter: "Success Fee", ...groupedData["Success Fee"] },
+          { parameter: "Fulfillment Fee", ...groupedData["Fulfillment Fee"] },
+          { parameter: "AutoIbt Fee", ...groupedData["AutoIbt Fee"] },
+          {
+            parameter: "Courier Collection Fee",
+            ...groupedData["Courier Collection Fee"],
+          },
+        ];
+      }
+
+      return parameterData;
+    }
   });
 
   console.log("data...", result);
 
-  return { result, cols: cols.reverse() };
+  return {
+    result: result?.filter((value) => value !== undefined),
+    cols: cols1.reverse(),
+  };
 }
 
 async function groupSalesByLast30Days(salesArray) {
@@ -498,10 +675,15 @@ async function groupSalesByLast30Days(salesArray) {
     "Sales",
     "Units Sold",
     "Returns",
+    "Return Cost",
     "Promo",
     "Estimated Payout",
     "Cost of Goods",
     "Takealot Fee",
+    "Success Fee",
+    "Courier Collection Fee",
+    "AutoIbt Fee",
+    "Fulfillment Fee",
     "Gross Profit",
     "Expenses",
     "Net Profit",
@@ -517,12 +699,13 @@ async function groupSalesByLast30Days(salesArray) {
   // Create a map to store the daily data
   const groupedData = {};
   const cols = [];
+  const cols1 = [];
 
   // Iterate over the last 30 days
   let currentDay = last30DaysStartDate.clone();
   while (currentDay.isBefore(last30DaysEndDate)) {
     const dayKey = currentDay.format("YYYY-MM-DD");
-
+    cols1.push({ title: dayKey, start: dayKey, end: dayKey });
     parameters.forEach((parameter) => {
       if (!groupedData[parameter]) {
         groupedData[parameter] = {};
@@ -585,18 +768,41 @@ async function groupSalesByLast30Days(salesArray) {
         if (parameter === "Expenses") return;
         if (groupedData[parameter][dayKey] !== undefined) {
           if (parameter === "Sales") {
-            groupedData[parameter][dayKey] += sale.selling_price;
+            if (
+              sale?.sale_status !== "Cancelled by Customer" &&
+              sale?.sale_status !== "Cancelled by Takealot"
+            ) {
+              groupedData[parameter][dayKey] += sale.selling_price;
+            }
           }
           if (parameter === "Units Sold") {
-            groupedData[parameter][dayKey] += sale.quantity;
+            if (
+              sale?.sale_status !== "Cancelled by Customer" &&
+              sale?.sale_status !== "Cancelled by Takealot"
+            ) {
+              groupedData[parameter][dayKey] += sale.quantity;
+            }
           }
           if (parameter === "Takealot Fee") {
             groupedData[parameter][dayKey] += sale.total_fee;
           }
+          if (parameter === "Success Fee") {
+            groupedData[parameter][dayKey] += sale.success_fee;
+          }
+          if (parameter === "Courier Collection Fee") {
+            groupedData[parameter][dayKey] += sale.courier_collection_fee;
+          }
+          if (parameter === "AutoIbt Fee") {
+            groupedData[parameter][dayKey] += sale.auto_ibt_fee;
+          }
+          if (parameter === "Fulfillment Fee") {
+            groupedData[parameter][dayKey] += sale.fulfillment_fee;
+          }
           if (parameter === "Gross Profit") {
             groupedData[parameter][dayKey] =
               groupedData["Sales"][dayKey] -
-              groupedData["Takealot Fee"][dayKey];
+              groupedData["Takealot Fee"][dayKey] -
+              groupedData["Return Cost"][dayKey];
           }
           if (parameter === "Net Profit") {
             groupedData[parameter][dayKey] =
@@ -625,27 +831,63 @@ async function groupSalesByLast30Days(salesArray) {
             groupedData[parameter][dayKey] += sale.quantity;
           }
 
-          if (
-            sale?.sale_status?.includes("Return") &&
-            parameter === "Returns"
-          ) {
+          if (sale?.sale_status === "Returned" && parameter === "Returns") {
             groupedData[parameter][dayKey] += sale.quantity;
+          }
+          if (sale?.sale_status === "Returned" && parameter === "Return Cost") {
+            groupedData[parameter][dayKey] +=
+              sale.selling_price - sale?.total_fee;
           }
         }
       });
     }
   });
 
-  // Create the result array
+  // // Create the result array
+  // const result = parameters.map((parameter) => {
+  //   const parameterData = { parameter };
+  //   cols.forEach((dayKey) => {
+  //     parameterData[dayKey] = groupedData[parameter][dayKey];
+  //   });
+  //   return parameterData;
+  // });
+
+  // return { result, cols: cols1.reverse() };
+
   const result = parameters.map((parameter) => {
-    const parameterData = { parameter };
-    cols.forEach((dayKey) => {
-      parameterData[dayKey] = groupedData[parameter][dayKey];
-    });
-    return parameterData;
+    if (
+      parameter !== "Success Fee" &&
+      parameter !== "Fulfillment Fee" &&
+      parameter !== "AutoIbt Fee" &&
+      parameter !== "Courier Collection Fee"
+    ) {
+      const parameterData = { parameter };
+      cols.forEach((dayKey) => {
+        parameterData[dayKey] = groupedData[parameter][dayKey];
+      });
+
+      if (parameter === "Takealot Fee") {
+        parameterData.children = [
+          { parameter: "Success Fee", ...groupedData["Success Fee"] },
+          { parameter: "Fulfillment Fee", ...groupedData["Fulfillment Fee"] },
+          { parameter: "AutoIbt Fee", ...groupedData["AutoIbt Fee"] },
+          {
+            parameter: "Courier Collection Fee",
+            ...groupedData["Courier Collection Fee"],
+          },
+        ];
+      }
+
+      return parameterData;
+    }
   });
 
-  return { result, cols: cols.reverse() };
+  console.log("data...", result);
+
+  return {
+    result: result?.filter((value) => value !== undefined),
+    cols: cols1.reverse(),
+  };
 }
 
 const groupSales = {
@@ -690,7 +932,7 @@ const generateWeeks = () => {
     weeks.push({
       start: currentWeekStart.format("YYYY-MM-DD"),
       end: currentWeekEnd.format("YYYY-MM-DD"),
-      weekKey: `WK${weekNumber}`,
+      title: `WK${weekNumber}`,
     });
 
     currentWeekStart = currentWeekEnd.add(1, "day");

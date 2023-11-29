@@ -14,13 +14,19 @@ const PAndL = ({ offers, userApiKeys }) => {
   const { user } = useAuth();
   const [searchedText, setSearchedText] = useState("");
   const [productTitle, setProductTitle] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [marketplace, setMarketplace] = useState(
     userApiKeys?.length > 0 ? userApiKeys[0]?.apiKey : null
   );
 
   const [duration, setDuration] = useState("Last 3 Months");
+  const [bottomTableDuration, setBottomTableDuration] =
+    useState("Last 3 Months");
   const [dates, setDates] = useState([
+    dayjs().subtract(3, "months").startOf("month"),
+    dayjs(),
+  ]);
+  const [bottomTableDates, setBottomTableDates] = useState([
     dayjs().subtract(3, "months").startOf("month"),
     dayjs(),
   ]);
@@ -38,7 +44,7 @@ const PAndL = ({ offers, userApiKeys }) => {
   const { data, isLoading } = useQuery(
     ["pl", dates, productTitle],
     async () => {
-      setLoading(true)
+      setLoading(true);
       // console.log("profit loss calling");
       const res = await axios.post("/api/sales/profitloss", {
         apiKey: marketplace,
@@ -55,9 +61,9 @@ const PAndL = ({ offers, userApiKeys }) => {
       //   }),
       // });
       // console.log("profit loss data..", res);
-      console.log("res of pl", res)
+      console.log("res of pl", res);
       setCols(res.data?.cols);
-      setLoading(false)
+      setLoading(false);
       return res.data?.result;
     },
     {
@@ -78,16 +84,21 @@ const PAndL = ({ offers, userApiKeys }) => {
         userApiKeys={userApiKeys}
         setMarketplace={setMarketplace}
         marketplace={marketplace}
+        setBottomTableDates={setBottomTableDates}
+        setBottomTableDuration={setBottomTableDuration}
       />
-
-        <TopTable
-          dates={dates}
-          data={data}
-          isLoading={isLoading}
-          loading = {loading}
-          cols={cols}
-          duration={duration}
-        />
+      <TopTable
+        dates={dates}
+        data={data}
+        isLoading={isLoading}
+        loading={loading}
+        cols={cols}
+        duration={duration}
+        setDates={setDates}
+        setBottomTableDates={setBottomTableDates}
+        setBottomTableDuration={setBottomTableDuration}
+        bottomTableDates={bottomTableDates}
+      />
       <div className="p-5">
         <BottomTable
           searchedText={searchedText}
@@ -97,6 +108,8 @@ const PAndL = ({ offers, userApiKeys }) => {
           productTitle={productTitle}
           marketplace={marketplace}
           userApiKeys={userApiKeys}
+          bottomTableDates={bottomTableDates}
+          bottomTableDuration={bottomTableDuration}
         />
       </div>
     </>

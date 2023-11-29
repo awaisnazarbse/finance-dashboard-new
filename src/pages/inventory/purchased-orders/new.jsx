@@ -18,6 +18,7 @@ import { useState } from "react";
 const NewPurchasedOrders = () => {
   const { user } = useAuth();
   const [active, setActive] = useState("Draft");
+  const [saveModal, setSaveModal] = useState(false);
   const [basicData, setBasicData] = useState({
     date: null,
     status: "Draft",
@@ -47,6 +48,7 @@ const NewPurchasedOrders = () => {
         setBasicData({});
         message.success("Purchase order saved!");
         queryClient.invalidateQueries(["purchase_orders"]);
+        setSaveModal(false)
       },
     }
   );
@@ -113,7 +115,8 @@ const NewPurchasedOrders = () => {
     setActive(status);
   };
 
-  const handleSave = () => {
+  const handleSave = (saveSettings) => {
+    console.log("save settings", saveSettings)
     if (
       productsData?.length <= 0 ||
       Object.values(basicData).some((value) => value === null || value === "")
@@ -130,9 +133,10 @@ const NewPurchasedOrders = () => {
         user: user?.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+        ...saveSettings
       };
-      // console.log("data to save", data);
-      saveMutation.mutate(data);
+      console.log("data to save", data);
+      // saveMutation.mutate(data);
     }
   };
 
@@ -231,6 +235,9 @@ const NewPurchasedOrders = () => {
                 (value) => value === null || value === ""
               )
             }
+            status={basicData.status}
+            saveModal={saveModal}
+            setSaveModal={setSaveModal}
           />
         </main>
       </DashboardLayout>

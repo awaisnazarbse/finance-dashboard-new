@@ -61,16 +61,16 @@ const Last3MonthsTrend = ({
           className="flex items-center w-[7rem] h-[5rem]"
           onClick={() => {
             setTrendChartData({
-              data: Object.values(record?.sales).reverse(),
-              labels: Object.keys(record?.sales).reverse(),
+              data: Object.values(record?.sales),
+              labels: Object.keys(record?.sales),
               dotSize: 2,
             });
             setShowTrendChart(true);
           }}
         >
           <TrendChart
-            data={Object.values(record?.sales).reverse()}
-            labels={Object.keys(record?.sales).reverse()}
+            data={Object.values(record?.sales)}
+            labels={Object.keys(record?.sales)}
             dotSize={2}
             active={active}
           />

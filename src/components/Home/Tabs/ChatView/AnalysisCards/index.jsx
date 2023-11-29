@@ -25,9 +25,7 @@ const AnalysisCards = ({ data, statsLoading }) => {
             statsLoading={statsLoading}
             title="Total Revenue"
             iButton={info.TOTAL_REVENUE}
-            value={Number(
-              Number(data?.totalRevenue)
-            )?.toFixed(2)}
+            value={Number(Number(data?.totalRevenue))?.toFixed(2)}
             percentage={data?.revenueChange}
             onClick={() => {
               setTotalRevenueActive(!totalRevenueActive);
@@ -169,7 +167,8 @@ const AnalysisCards = ({ data, statsLoading }) => {
             value={(
               Number(data?.totalRevenue) -
               Number(data?.takealotFee) -
-              Number(data?.totalExpenses)
+              Number(data?.totalExpenses) -
+              Number(data?.returnCost)
             )?.toFixed(2)}
             percentage={calculatePercentageChange(
               data?.totalRevenue -
@@ -231,7 +230,8 @@ const AnalysisCards = ({ data, statsLoading }) => {
               Number(data?.totalRevenue) -
               Number(data?.takealotFee) -
               Number(data?.totalExpenses) -
-              Number(data?.cogs)
+              Number(data?.cogs) -
+              Number(data?.returnCost)
             )?.toFixed(2)}
             percentage={calculatePercentageChange(
               data?.totalRevenue - data?.takealotFee - data?.totalExpenses,

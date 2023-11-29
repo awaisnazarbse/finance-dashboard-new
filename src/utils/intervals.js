@@ -2,15 +2,29 @@ import dayjs from "dayjs";
 
 // Calculate the weeks within the date range
 function getWeeks(startDate, endDate) {
-  const weeks = [];
-  let currentDate = new Date(startDate);
+  // const weeks = [];
+  // let currentDate = new Date(startDate);
 
-  while (currentDate <= endDate) {
-    const startOfWeek = getStartOfWeek(currentDate);
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    weeks.push(`${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`);
-    currentDate.setDate(currentDate.getDate() + 7);
+  // while (currentDate <= endDate) {
+  //   const startOfWeek = getStartOfWeek(currentDate);
+  //   const endOfWeek = new Date(startOfWeek);
+  //   endOfWeek.setDate(startOfWeek.getDate() + 6);
+  //   weeks.push(`${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`);
+  //   currentDate.setDate(currentDate.getDate() + 7);
+  // }
+
+  // return weeks;
+
+  const weeks = [];
+  let currentDate = dayjs(startDate);
+
+  while (currentDate.isBefore(endDate) || currentDate.isSame(endDate)) {
+    const startOfWeek = currentDate.startOf("week");
+    const endOfWeek = startOfWeek.clone().add(6, "day");
+    weeks.push(
+      `${startOfWeek.format("YYYY-MM-DD")} - ${endOfWeek.format("YYYY-MM-DD")}`
+    );
+    currentDate = currentDate.add(7, "day");
   }
 
   return weeks;
@@ -52,18 +66,18 @@ function padZero(number) {
 
 // Calculate the days within the date range
 function getDays(startDate, endDate) {
-  console.log("start in days", startDate);
-  console.log("end in days", endDate);
+  // console.log("start in days", startDate);
+  // console.log("end in days", endDate);
   const days = [];
   let currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
-    console.log("currentDate", currentDate);
+    // console.log("currentDate", currentDate);
     days.push(formatDate(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  console.log("days",days);
+  // console.log("days",days);
 
   return days;
 }

@@ -133,6 +133,8 @@ const RecordsTable = ({
   marketplace,
   offersCogs,
   sellerNames,
+  setMarketplace,
+  userApiKeys,
 }) => {
   const { user } = useAuth();
   const [excelData, setExcelData] = useState([]);
@@ -581,19 +583,25 @@ const RecordsTable = ({
         </div>
       ),
       dataIndex: "fullfilment",
-      render: (_, record) => (
-        <div className="w-full flex justify-center items-center">
-          <Tag
-            className="text-[11px] px-5 py-1"
-            style={{
-              background: "#EA7866",
-            }}
-            color="white"
-          >
-            {record?.leadtime_days > 0 ? "LEADTIME" : "IN STOCK"}
-          </Tag>
-        </div>
-      ),
+      render: (_, record) => {
+        let dcStock = 0;
+        record?.stock_at_takealot?.map((e) => {
+          dcStock += e?.quantity_available;
+        });
+        return (
+          <div className="w-full flex justify-center items-center">
+            <Tag
+              className="text-[11px] px-5 py-1"
+              style={{
+                background: "#EA7866",
+              }}
+              color="white"
+            >
+              {dcStock > 0 ? "IN STOCK" : "LEADTIME"}
+            </Tag>
+          </div>
+        );
+      },
     },
     {
       title: (
@@ -732,18 +740,18 @@ const RecordsTable = ({
 
   return (
     <div className="p-5">
-      <div className="bg-white rounded-[10px] p-8 w-full flex flex-col space-y-8">
+      <div className="bg-white rounded-[10px] p-3 w-full flex flex-col space-y-8">
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-center md:justify-between">
-          <Button
-            className="p-6 w-fit md:w-auto flex items-center justify-center space-x-2 border-0"
-            style={{
-              background: "rgba(21, 105, 189, 0.06)",
-            }}
-            onClick={() => setOfferModal(true)}
-          >
-            Add COG
-          </Button>
-          <div className="flex space-x-2">
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-center md:space-x-2">
+            <Button
+              className="p-6 w-fit md:w-auto flex items-center justify-center space-x-2 border-0"
+              style={{
+                background: "rgba(21, 105, 189, 0.06)",
+              }}
+              onClick={() => setOfferModal(true)}
+            >
+              Add COG
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
@@ -771,6 +779,36 @@ const RecordsTable = ({
               <BiExport size={20} />
               <span className="text-[11px] text-black">Export</span>
             </Button>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex px-1 md:px-4 md:space-x-2 items-center border border-[#C2BDBD] rounded-md">
+              <Image
+                alt="alt text"
+                src="/icons/market.svg"
+                width={18}
+                height={18}
+              />
+              <Select
+                placeholder="All market places"
+                options={[
+                  { label: "All market places", value: "All market places" },
+                  ...userApiKeys?.map((key) => {
+                    return { label: key?.seller_name, value: key?.apiKey };
+                  }),
+                ]}
+                value={marketplace}
+                onChange={(e) => setMarketplace(e)}
+                suffixIcon={
+                  <Image
+                    alt="alt text"
+                    src="/icons/downarrow.svg"
+                    width={13}
+                    height={5}
+                  />
+                }
+                bordered={false}
+              />
+            </div>
           </div>
         </div>
         <Table

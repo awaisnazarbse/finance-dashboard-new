@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import ShipmentsModal from "./ShipmentsModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import purchasedOrdersApi from "@/lib/purchasedOrders";
+import SaveSettingModal from "./SaveSettingModal";
 
 const { Footer } = Layout;
 
@@ -24,6 +25,9 @@ const NewPurchaseOrderTabs = ({
   onSave,
   submitting,
   saveBtnDisabled,
+  status,
+  saveModal,
+  setSaveModal,
 }) => {
   const [active, setActive] = useState("Products");
 
@@ -36,12 +40,15 @@ const NewPurchaseOrderTabs = ({
       unitsOrdered: 0,
       unitsPerBox: 0,
       boxesOrdered: 0,
-      boxDimensions: 0,
+      boxDimensions: {
+        length: 0,
+        width: 0,
+        height: 0,
+      },
       totalManufacturingCost: 0,
       manufacturingCostPerUnit: 0,
       transportationCostPerUnit: 0,
       totalCostPerUnit: 0,
-      hsCode: "",
       comment: "",
     };
     setProductsData([...productsData, newData]);
@@ -52,7 +59,6 @@ const NewPurchaseOrderTabs = ({
       costName: "",
       amount: 0,
       attributeCostToProducts: "By weight",
-      currency: "$",
       comment: "",
     };
     setTransportationCostData([...transportationCostData, newData]);
@@ -92,6 +98,7 @@ const NewPurchaseOrderTabs = ({
               productsData={productsData}
               setProductsData={setProductsData}
               offers={offers}
+              transportationCostData={transportationCostData}
             />
           )}
           {active === "Transportation Cost" && (
@@ -144,10 +151,13 @@ const NewPurchaseOrderTabs = ({
             style={{
               cursor: saveBtnDisabled ? "not-allowed" : "pointer",
             }}
-            onClick={() => onSave()}
+            onClick={() => {
+              setSaveModal(true);
+              // onSave()
+            }}
             disabled={saveBtnDisabled}
           >
-            {submitting ? "Saving..." : "Save"}
+            Save
           </button>
         </div>
       </div>
@@ -160,6 +170,18 @@ const NewPurchaseOrderTabs = ({
           shipments={shipments}
           setShipmentsData={setShipmentsData}
           shipmentsData={shipmentsData}
+        />
+      )}
+      {saveModal && (
+        <SaveSettingModal
+          show={saveModal}
+          close={() => {
+            setSaveModal(false);
+          }}
+          cogDisabled={status === "Closed" ? false : true}
+          status={status}
+          submitting={submitting}
+          onSave={onSave}
         />
       )}
     </div>

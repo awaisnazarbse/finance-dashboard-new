@@ -17,19 +17,21 @@ const OrderItemsTable = ({
   productTitle,
   marketplace,
   userApiKeys,
+  bottomTableDates,
+  bottomTableDuration
 }) => {
   const { user } = useAuth();
   const { data, isLoading } = useQuery(
-    ["order-items", dates, productTitle, marketplace],
+    ["order-items", bottomTableDates, productTitle, marketplace],
     async () => {
       const res = await axios.post(
         // `http://localhost:3000/sales`,
         `https://finance-dashboard-server-smoky.vercel.app/sales`,
         {
           apiKey: user?.apiKey,
-          startDate: dates[0],
-          endDate: dates[1],
-          duration,
+          startDate: bottomTableDates[0],
+          endDate: bottomTableDates[1],
+          duration: bottomTableDuration,
           productTitle,
           marketplace,
           userApiKeys,
@@ -52,7 +54,7 @@ const OrderItemsTable = ({
   );
 
   return (
-    <div className="flex flex-col md:mt-10 space-y-10">
+    <div className="">
       <Table
         loading={isLoading}
         columns={columns}

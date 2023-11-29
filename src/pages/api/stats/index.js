@@ -5,12 +5,13 @@ import userApi from "@/lib/user";
 import offersApi from "@/lib/offers";
 import getAllSalesNew from "@/utils/getAllSalesNew";
 import getCog from "@/utils/getCog";
+import getAllTransactions from "@/utils/getAllTransactions";
 
 export default async function handler(req, res) {
   const data = req.body;
   try {
     let stats = [];
-    let cogs = 0;
+
     // console.log("dates in stats", data?.dates);
     for (let i = 0; i < data?.dates?.length; i++) {
       const startDate = dayjs(data?.dates[i]?.start).format("YYYY-MM-DD");
@@ -18,6 +19,12 @@ export default async function handler(req, res) {
       // console.log("startDate in for", startDate);
       // console.log("endDate in for", endDate);
       let sales = [];
+      let cogs = 0;
+      let adCreditFee = 0;
+      let subscriptionFee = 0;
+      let storageFee = 0;
+      let manualReversalFee = 0;
+      let transactions = [];
       if (data?.productTitle === "") {
         if (data?.marketplace === "All market places") {
           const userApiKeys = await userApi.getActiveUserAPIKeys(data?.uid);
@@ -28,11 +35,22 @@ export default async function handler(req, res) {
               endDate,
               userApiKeys[i]?.apiKey
             );
+            let newTrans = await getAllTransactions(
+              startDate,
+              endDate,
+              userApiKeys[i]?.apiKey
+            );
 
             sales = sales?.concat(newSales);
+            transactions = transactions?.concat(newTrans);
           }
         } else {
           sales = await getAllSalesNew(startDate, endDate, data?.marketplace);
+          transactions = await getAllTransactions(
+            startDate,
+            endDate,
+            data?.marketplace
+          );
         }
         const offerIds = [...new Set(sales?.map((sale) => sale.offer_id))];
         cogs = await getCog(offerIds);
@@ -62,14 +80,32 @@ export default async function handler(req, res) {
         cogs = await offersApi.getOfferCOGByTitle(data?.productTitle);
       }
 
+      if (transactions?.length > 0) {
+        transactions.forEach((e) => {
+          if (e?.transaction_type?.description === "Ad Credit Purchase") {
+            adCreditFee += Number(e?.inc_vat);
+          } else if (
+            e?.transaction_type?.description === "Subscription Fee Charge"
+          ) {
+            subscriptionFee += Number(e?.inc_vat);
+          } else if (
+            e?.transaction_type?.description === "Storage Fee Charge"
+          ) {
+            storageFee += Number(e?.inc_vat);
+          } else if (e?.transaction_type?.description === "Manual Reversal") {
+            manualReversalFee += Number(e?.inc_vat);
+          }
+        });
+      }
+
       let salesStats = {
         earning: 0,
         orders: sales?.length,
         unitSold: 0,
         refunded: 0,
-        fee: 0,
+        fee: manualReversalFee,
         promo: 0,
-        expenses: 0,
+        expenses: adCreditFee + storageFee + subscriptionFee,
         refundCost: 0,
         successFee: 0,
         fulfillmentFee: 0,
@@ -79,6 +115,10 @@ export default async function handler(req, res) {
         endDate: dayjs(data?.dates[i]?.end).format("DD/MM/YYYY"),
         title: data?.dates[i]?.title,
         cogs,
+        adCreditFee,
+        subscriptionFee,
+        storageFee,
+        manualReversalFee,
       };
       // console.log("response", response.data);
       sales?.forEach((e) => {

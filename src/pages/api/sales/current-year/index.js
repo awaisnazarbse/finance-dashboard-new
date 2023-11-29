@@ -557,8 +557,8 @@ export default async function handler(req, res) {
         }
       }
       const expensesData = await expensesApi.getExpensesByDateRange({
-        start: dayjs(startDate).format("MM/DD/YY"),
-        end: dayjs(endDate).format("MM/DD/YY"),
+        start: dayjs(startDate).format("DD MMM YYYY"),
+        end: dayjs(endDate).format("DD MMM YYYY"),
       });
       // console.log("groupBy", body?.groupBy);
       // Group and calculate metrics based on groupBy
@@ -609,7 +609,7 @@ export default async function handler(req, res) {
         // Add similar cases for other groupBy types
       }
 
-      console.log("timeIntervals", timeIntervals);
+      // console.log("timeIntervals", timeIntervals);
 
       // Calculate metrics for each time interval, filling in missing data with zeros
       const metrics = {
@@ -737,8 +737,8 @@ export default async function handler(req, res) {
       }
       console.log("salesData", salesData?.length);
       const expensesData = await expensesApi.getExpensesByDateRange({
-        start: dayjs(startDate).format("MM/DD/YY"),
-        end: dayjs(endDate).format("MM/DD/YY"),
+        start: dayjs(startDate).format("DD MMM YYYY"),
+        end: dayjs(endDate).format("DD MMM YYYY"),
       });
       // console.log("groupBy", body?.groupBy);
       // Group and calculate metrics based on groupBy
@@ -762,7 +762,7 @@ export default async function handler(req, res) {
         default:
           throw new Error("Invalid groupBy");
       }
-      // console.log("groupedData", groupedData);
+      console.log("group24edData", groupedData);
       // Create an array of all time intervals (hours, weeks, or months)
       let timeIntervals = [];
       switch (body?.groupBy) {

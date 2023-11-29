@@ -24,12 +24,14 @@ const RecordsTable = ({
   productTitle,
   marketplace,
   userApiKeys,
+  bottomTableDates,
+  bottomTableDuration,
 }) => {
   const { data: essentials, isLoading: essentialsLoading } = useQuery(
     ["essentials"],
     async () => {
       const purchaseOrders = await purchasedOrdersApi.getPurchasedOrderByStatus(
-        "Ordered"
+        ["Ordered"]
       );
       const manufacturingAndLogistics =
         await offersApi.getManufacturingAndLogistics();
@@ -65,11 +67,12 @@ const RecordsTable = ({
           String(record.tsin).includes(value)
         );
       },
-      width: "350px",
+      width: "400px",
       dataIndex: "product",
       render: (_, record) => (
         <ProductDetails record={record} essentials={essentials} />
       ),
+      fixed: "left",
     },
     {
       title: (
@@ -156,7 +159,9 @@ const RecordsTable = ({
       render: (_, record) => (
         <div className="w-full flex items-center justify-center">
           <div className="w-full flex items-center justify-center">
-            <span className="text-[11px] text-center">R {record?.cog * Number(record?.unitSold)}</span>
+            <span className="text-[11px] text-center">
+              R {(record?.cog * Number(record?.unitSold)).toFixed(2)}
+            </span>
           </div>
         </div>
       ),
@@ -325,6 +330,8 @@ const RecordsTable = ({
           String(record.tsin).toLowerCase().includes(value.toLowerCase())
         );
       },
+      fixed: "left",
+      width: "150px",
     },
     {
       title: (
@@ -332,7 +339,7 @@ const RecordsTable = ({
           <span className="text-[11px] text-[#777777]">Product</span>
         </div>
       ),
-      width: "400px",
+      width: "350px",
       dataIndex: "product",
       render: (_, record) => (
         <div className="flex items-center">
@@ -379,7 +386,9 @@ const RecordsTable = ({
           </div>
         </div>
       ),
+      fixed: "left",
     },
+
     {
       title: (
         <div className="flex items-center space-x-4 justify-center">
@@ -461,7 +470,7 @@ const RecordsTable = ({
         <div className="w-full flex items-center justify-center">
           <div className="w-full flex items-center justify-center">
             <span className="text-[11px] text-center">
-              R {record?.cog * Number(record?.quantity)}
+              R {(record?.cog * Number(record?.quantity)).toFixed(2)}
             </span>
           </div>
         </div>
@@ -699,15 +708,15 @@ const RecordsTable = ({
 
   return (
     <div
-      className="flex flex-col justify-between bg-white p-4 py-6 rounded-[10px] w-full"
+      className="flex flex-col space-y-2 bg-white p-4 rounded-[10px] w-full"
       style={{
-        boxShadow: " rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
+        boxShadow: "rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
       }}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-8">
           <span className="font-medium text-sm">
-            {formatDateRange(dates[0], dates[1])}
+            {formatDateRange(bottomTableDates[0], bottomTableDates[1])}
           </span>
           {tabs?.map((e, i) => (
             <button
@@ -753,7 +762,7 @@ const RecordsTable = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-col space-y-10">
+      <div className="">
         {active === "Products" && (
           <ProductsTable
             dates={dates}
@@ -769,6 +778,8 @@ const RecordsTable = ({
             marketplace={marketplace}
             userApiKeys={userApiKeys}
             essentialsLoading={essentialsLoading}
+            bottomTableDates={bottomTableDates}
+            bottomTableDuration={bottomTableDuration}
           />
         )}
         {active === "Order Items" && (
@@ -784,6 +795,8 @@ const RecordsTable = ({
             productTitle={productTitle}
             marketplace={marketplace}
             userApiKeys={userApiKeys}
+            bottomTableDates={bottomTableDates}
+            bottomTableDuration={bottomTableDuration}
           />
         )}
       </div>

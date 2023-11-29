@@ -55,7 +55,7 @@ const changeCogType = async (offer_id, cogType) => {
 
 const getAllOffersCOG = async () => {
   const ref = collection(db, "offers-cog");
-  const q = query(ref, where("cogType", "==", "By period batch"))
+  const q = query(ref, where("cogType", "==", "By period batch"));
   const res = await getDocs(q);
   const data = res.docs.map((e) => {
     return {
@@ -497,11 +497,29 @@ const getSupplierOrderSettings = async () => {
   return data;
 };
 
+const getOfferCogsByOfferIds = async (offerIds) => {
+  const ref = collection(db, "offers-cog");
+  const q = query(ref, where("offer_id", "in", offerIds));
+  const cogRes = await getDocs(q);
+  let offersCogs = [];
+  cogRes.docs.forEach((doc) => {
+    if (doc.data()?.cog) {
+      offersCogs.push({
+        ...doc.data(),
+        id: doc.id,
+        cog: Number(doc.data()?.cog),
+      });
+    }
+  });
+  return offersCogs
+};
+
 const offersApi = {
   addOfferCOG,
   getOfferCOG,
   getOfferCOGs,
   updateSupplierOrderSettings,
+  getOfferCogsByOfferIds,
   updateManufacturingAndLogisticsSettings,
   updateDimensionsSettings,
   getOfferCOGWithType,

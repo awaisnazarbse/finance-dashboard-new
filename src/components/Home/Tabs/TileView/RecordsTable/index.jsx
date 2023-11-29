@@ -29,7 +29,7 @@ const RecordsTable = ({
     ["essentials"],
     async () => {
       const purchaseOrders = await purchasedOrdersApi.getPurchasedOrderByStatus(
-        "Ordered"
+        ["Ordered"]
       );
       const manufacturingAndLogistics =
         await offersApi.getManufacturingAndLogistics();
@@ -65,11 +65,12 @@ const RecordsTable = ({
           String(record.tsin).includes(value)
         );
       },
-      width: "350px",
       dataIndex: "product",
       render: (_, record) => (
         <ProductDetails record={record} essentials={essentials} />
       ),
+      width: "400px",
+      fixed: "left",
     },
     {
       title: (
@@ -157,7 +158,7 @@ const RecordsTable = ({
         <div className="w-full flex items-center justify-center">
           <div className="w-full flex items-center justify-center">
             <span className="text-[11px] text-center">
-              R {record?.cog * Number(record?.unitSold)}
+              R {(record?.cog * Number(record?.unitSold)).toFixed(2)}
             </span>
           </div>
         </div>
@@ -328,6 +329,8 @@ const RecordsTable = ({
           String(record.tsin).toLowerCase().includes(value.toLowerCase())
         );
       },
+      fixed: "left",
+      width: "150px",
     },
     {
       title: (
@@ -335,7 +338,7 @@ const RecordsTable = ({
           <span className="text-[11px] text-[#777777]">Product</span>
         </div>
       ),
-      width: "400px",
+      width: "350px",
       dataIndex: "product",
       render: (_, record) => (
         <div className="flex items-center">
@@ -382,6 +385,7 @@ const RecordsTable = ({
           </div>
         </div>
       ),
+      fixed: "left",
     },
     {
       title: (
@@ -464,7 +468,7 @@ const RecordsTable = ({
         <div className="w-full flex items-center justify-center">
           <div className="w-full flex items-center justify-center">
             <span className="text-[11px] text-center">
-              R {record?.cog * Number(record?.quantity)}
+              R {(record?.cog * Number(record?.quantity)).toFixed(2)}
             </span>
           </div>
         </div>
@@ -520,9 +524,7 @@ const RecordsTable = ({
           <div className="w-full flex items-center justify-center">
             <span className="text-[11px] text-center">
               {Number(
-                ((record?.selling_price -
-                  record?.total_fee) /
-                  record?.cog) *
+                ((record?.selling_price - record?.total_fee) / record?.cog) *
                   100
               ).toFixed(2)}
               %
@@ -561,7 +563,6 @@ const RecordsTable = ({
     "Refunds",
     "Sales",
     "Promo",
-    "Sellable returns",
     "Refund cost",
     "Takealot fee",
     "Cost of goods",

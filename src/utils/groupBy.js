@@ -7,7 +7,7 @@ const groupDataByHourly = (salesData, expensesData) => {
   salesData.forEach((sale) => {
     const saleDate = new Date(sale.order_date);
     const hourKey = `${padZero(saleDate.getHours())}:00:00`;
-    console.log("hourKey", hourKey);
+    // console.log("hourKey", hourKey);
     if (!hourlyData[hourKey]) {
       hourlyData[hourKey] = {
         rev: 0,
@@ -25,7 +25,7 @@ const groupDataByHourly = (salesData, expensesData) => {
       };
     }
 
-    console.log("sale", sale);
+    // console.log("sale", sale);
     if (
       sale?.sale_status !== "Cancelled by Customer" &&
       sale?.sale_status !== "Cancelled by Takealot"
@@ -34,7 +34,7 @@ const groupDataByHourly = (salesData, expensesData) => {
       hourlyData[hourKey].unitSold += sale.quantity;
     }
     if (sale.sale_status === "Returned") {
-      hourlyData[hourKey].refundCost += sale.selling_price;
+      hourlyData[hourKey].refundCost += sale.selling_price - sale?.total_fee;
       hourlyData[hourKey].refunds += sale.quantity;
     }
 
@@ -100,7 +100,7 @@ function groupDataByDaily(salesData, expensesData) {
     }
 
     if (sale.sale_status === "Returned") {
-      dailyData[dayKey].refundCost += sale.selling_price;
+      dailyData[dayKey].refundCost += sale.selling_price - sale?.total_fee;
       dailyData[dayKey].refunds += sale.quantity;
     }
 
@@ -130,11 +130,18 @@ function groupDataByWeekly(salesData, expensesData) {
   const weeklyData = {};
 
   salesData.forEach((sale) => {
-    const date = new Date(sale.order_date);
-    const startOfWeek = getStartOfWeek(date);
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    const weekKey = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+    // const date = new Date(sale.order_date);
+    // const startOfWeek = getStartOfWeek(date);
+    // const endOfWeek = new Date(startOfWeek);
+    // endOfWeek.setDate(startOfWeek.getDate() + 6);
+    // const weekKey = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+    const date = dayjs(sale.order_date);
+    const startOfWeek = date.startOf("week");
+    const endOfWeek = startOfWeek.clone().add(6, "day"); // Use clone to avoid mutating the original object
+    const weekKey = `${startOfWeek.format("YYYY-MM-DD")} - ${endOfWeek.format(
+      "YYYY-MM-DD"
+    )}`;
+    console.log("week", weekKey);
 
     if (!weeklyData[weekKey]) {
       weeklyData[weekKey] = {
@@ -156,11 +163,11 @@ function groupDataByWeekly(salesData, expensesData) {
       sale?.sale_status !== "Cancelled by Customer" &&
       sale?.sale_status !== "Cancelled by Takealot"
     ) {
-    weeklyData[weekKey].rev += sale.selling_price;
-    weeklyData[weekKey].unitSold += sale.quantity;
+      weeklyData[weekKey].rev += sale.selling_price;
+      weeklyData[weekKey].unitSold += sale.quantity;
     }
     if (sale.sale_status === "Returned") {
-      weeklyData[weekKey].refundCost += sale.selling_price;
+      weeklyData[weekKey].refundCost += sale.selling_price - sale?.total_fee;
       weeklyData[weekKey].refunds += sale.quantity;
     }
 
@@ -219,7 +226,8 @@ function groupDataByMonthly(salesData, expensesData) {
     }
 
     if (sale.sale_status === "Returned") {
-      monthlyData[formattedMonth].refundCost += sale.selling_price;
+      monthlyData[formattedMonth].refundCost +=
+        sale.selling_price - sale?.total_fee;
       monthlyData[formattedMonth].refunds += sale.quantity;
     }
 
@@ -273,12 +281,13 @@ function groupDataByQuarterly(salesData, expensesData) {
       sale?.sale_status !== "Cancelled by Customer" &&
       sale?.sale_status !== "Cancelled by Takealot"
     ) {
-    quarterlyData[quarterKey].rev += sale.selling_price;
-    quarterlyData[quarterKey].unitSold += sale.quantity;
+      quarterlyData[quarterKey].rev += sale.selling_price;
+      quarterlyData[quarterKey].unitSold += sale.quantity;
     }
 
     if (sale.sale_status === "Returned") {
-      quarterlyData[quarterKey].refundCost += sale.selling_price;
+      quarterlyData[quarterKey].refundCost +=
+        sale.selling_price - sale?.total_fee;
       quarterlyData[quarterKey].refunds += sale.quantity;
     }
 
@@ -306,7 +315,7 @@ function groupDataByQuarterly(salesData, expensesData) {
 
 function getStartOfWeek(date) {
   const dayOfWeek = date.getDay();
-  const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? 0 : 1);
   return new Date(date.setDate(diff));
 }
 

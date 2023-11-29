@@ -20,20 +20,22 @@ const ProductsTable = ({
   marketplace,
   userApiKeys,
   essentialsLoading,
+  bottomTableDates,
+  bottomTableDuration
 }) => {
   const { user } = useAuth();
 
   const { data, isLoading } = useQuery(
-    ["products-sales3", dates, productTitle, marketplace],
+    ["products-sales3", bottomTableDates, productTitle, marketplace],
     async () => {
       const res = await axios.post(
         // "http://localhost:3000/sales/products_sales",
         "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
         {
           apiKey: user?.apiKey,
-          startDate: dates[0],
-          endDate: dates[1],
-          duration,
+          startDate: bottomTableDates[0],
+          endDate: bottomTableDates[1],
+          duration: bottomTableDuration,
           productTitle,
           marketplace,
           userApiKeys,
@@ -68,7 +70,7 @@ const ProductsTable = ({
   );
 
   return (
-    <div className="flex flex-col space-y-10">
+    <div className="">
       <Table
         loading={isLoading || essentialsLoading}
         columns={columns}

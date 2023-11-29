@@ -54,34 +54,51 @@ const NetProfit = ({
   const renderFeeChild = (data) => {
     return (
       <div className="flex flex-col">
-        <Row
-          title="Success fee"
-          value={`R ${Number(data?.successFee)?.toFixed(2)}`}
-          type="body"
-          isLoading={isLoading}
-          info="Success fee"
-        />
-        <Row
-          title="Fulfillment fee"
-          value={`R ${Number(data?.fulfillmentFee)?.toFixed(2)}`}
-          type="body"
-          isLoading={isLoading}
-          info="Fulfillment fee"
-        />
-        <Row
-          title="Courier collection fee"
-          value={`R ${Number(data?.courierCollectionFee)?.toFixed(2)}`}
-          type="body"
-          isLoading={isLoading}
-          info="Courier collection fee"
-        />
-        <Row
-          title="Auto ibt fee"
-          value={`R ${Number(data?.autoIbtFee)?.toFixed(2)}`}
-          type="body"
-          isLoading={isLoading}
-          info="Auto ibt fee"
-        />
+        {Number(data?.successFee) !== 0 && (
+          <Row
+            title="Success fee"
+            value={`R ${Number(data?.successFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Success fee"
+          />
+        )}
+        {Number(data?.fulfillmentFee) !== 0 && (
+          <Row
+            title="Fulfillment fee"
+            value={`R ${Number(data?.fulfillmentFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Fulfillment fee"
+          />
+        )}
+        {Number(data?.courierCollectionFee) !== 0 && (
+          <Row
+            title="Courier collection fee"
+            value={`R ${Number(data?.courierCollectionFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Courier collection fee"
+          />
+        )}
+        {Number(data?.autoIbtFee) !== 0 && (
+          <Row
+            title="Auto ibt fee"
+            value={`R ${Number(data?.autoIbtFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Auto ibt fee"
+          />
+        )}
+        {Number(data?.manualReversalFee) !== 0 && (
+          <Row
+            title="Manual Reversal"
+            value={`R ${Number(data?.manualReversalFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Manual Reversal"
+          />
+        )}
       </div>
     );
   };
@@ -97,6 +114,33 @@ const NetProfit = ({
             info={category}
           />
         ))}
+        {Number(data?.storageFee) !== 0 && (
+          <Row
+            title="Storage Fee Charge"
+            value={`R ${Number(data?.storageFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Storage Fee Charge"
+          />
+        )}
+        {Number(data?.adCreditFee) !== 0 && (
+          <Row
+            title="Ad Credit Purchase"
+            value={`R ${Number(data?.adCreditFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Ad Credit Purchase"
+          />
+        )}
+        {Number(data?.subscriptionFee) !== 0 && (
+          <Row
+            title="Subscription Fee Charge"
+            value={`R ${Number(data?.subscriptionFee)?.toFixed(2)}`}
+            type="body"
+            isLoading={isLoading}
+            info="Subscription Fee Charge"
+          />
+        )}
         {/* <Row
           title="Success fee"
           value={`R ${data?.successFee?.toFixed(2)}`}

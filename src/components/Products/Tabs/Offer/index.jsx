@@ -17,12 +17,12 @@ const Offer = ({
 
   return (
     <>
-      <TopBar
+      {/* <TopBar
         setSearchedText={setSearchedText}
         userApiKeys={userApiKeys}
         marketplace={marketplace}
         setMarketplace={setMarketplace}
-      />
+      /> */}
       <RecordsTable
         data={offers}
         searchedText={searchedText}
@@ -30,6 +30,8 @@ const Offer = ({
         marketplace={marketplace}
         offersCogs={offersCogs}
         sellerNames={sellerNames}
+        setMarketplace={setMarketplace}
+        userApiKeys={userApiKeys}
       />
     </>
   );

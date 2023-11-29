@@ -1,15 +1,17 @@
 import getAllSales from "@/utils/getAllSales";
 import getAllSalesByProduct from "@/utils/getAllSalesByProduct";
 import getAllSalesNew from "@/utils/getAllSalesNew";
+import getAllTransactions from "@/utils/getAllTransactions";
 import groupSales from "@/utils/groupSalesByMonths";
 import dayjs from "dayjs";
 
 export default async function handler(req, res) {
   const body = req.body;
-console.log("pl data", body)
+  console.log("pl data", body);
   try {
     let rangeSales;
     let groupedSales;
+    let transactions = [];
 
     if (body?.duration === "Last 12 Months") {
       const first6MonthsStart = body?.dates[0];
@@ -31,11 +33,22 @@ console.log("pl data", body)
           dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
           body?.apiKey
         );
-
+        let first6MonthsTransactions = await getAllTransactions(
+          dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+          dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+          body?.apiKey
+        );
+        let second6MonthsTransactions = await getAllTransactions(
+          dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+          dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+          body?.apiKey
+        );
 
         rangeSales = first6MonthsSales?.concat(second6MonthsSales);
-        console.log("ranges sales length", rangeSales?.length)
-
+        transactions = first6MonthsTransactions?.concat(
+          second6MonthsTransactions
+        );
+        console.log("ranges sales length", rangeSales?.length);
       } else {
         let first6MonthsSales = await getAllSalesByProduct(
           dayjs(first6MonthsStart).format("YYYY-MM-DD"),
@@ -62,7 +75,12 @@ console.log("pl data", body)
           dayjs(body?.dates[1]).format("YYYY-MM-DD"),
           body?.apiKey
         );
-        console.log("ranges sales length", rangeSales?.length)
+        transactions = await getAllTransactions(
+          dayjs(body?.dates[0]).format("YYYY-MM-DD"),
+          dayjs(body?.dates[1]).format("YYYY-MM-DD"),
+          body?.apiKey
+        );
+        console.log("ranges sales length", rangeSales?.length);
       } else {
         rangeSales = await getAllSalesByProduct(
           dayjs(body?.dates[0]).format("YYYY-MM-DD"),
@@ -75,12 +93,39 @@ console.log("pl data", body)
     }
 
     if (body?.duration === "Last 12 Months") {
-      groupedSales = await groupSales.groupSalesByMonths(rangeSales);
+      groupedSales = await groupSales.groupSalesByMonths(
+        rangeSales,
+        transactions
+      );
     } else if (body?.duration === "Last 3 Months") {
-      groupedSales = await groupSales.groupSalesByWeeks(rangeSales);
+      groupedSales = await groupSales.groupSalesByWeeks(
+        rangeSales,
+        transactions
+      );
     } else if (body?.duration === "Last 30 Days") {
-      groupedSales = await groupSales.groupSalesByLast30Days(rangeSales);
+      groupedSales = await groupSales.groupSalesByLast30Days(
+        rangeSales,
+        transactions
+      );
     }
+    //     else {
+    //       const startDate = dayjs(body?.dates[0]);
+    //       const endDate = dayjs(body?.dates[1]);
+    //       const dateDiffInDays = endDate.diff(startDate, "days");
+    //       console.log("dateDiffInDays", dateDiffInDays);
+    //       let groupingType = "days";
+    //       if (dateDiffInDays > 92) {
+    //         groupingType = "months";
+    //       } else if (dateDiffInDays > 30) {
+    //         groupingType = "weeks";
+    //       }
+    // if(groupingType === "months"){
+    //   groupedSales = await groupSales.groupSalesByMonths(rangeSales);
+    // }else if(groupingType === "weeks"){
+
+    // }
+
+    //     }
 
     res.status(200).json(groupedSales);
   } catch (error) {
