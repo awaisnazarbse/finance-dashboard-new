@@ -7,8 +7,8 @@ import getAllTransactions from "@/utils/getAllTransactions";
 import getCog from "@/utils/getCog";
 import getCogNew from "@/utils/getCogNew";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -352,21 +352,20 @@ export default async function handler(req, res) {
             second6MonthsTransactions
           );
         } else {
-          const startDate = dayjs(body?.startDate).format("DD MMM YYYY")
-          const endDate = dayjs(body?.endDate).format("DD MMM YYYY")
-          const formattedStart = formatDate(startDate)
-          const formattedEnd = formatDate(endDate)
+          const startDate = dayjs(body?.startDate).format("DD MMM YYYY");
+          const endDate = dayjs(body?.endDate).format("DD MMM YYYY");
+          const formattedStart = formatDate(startDate);
+          const formattedEnd = formatDate(endDate);
+          console.log("start date chart view cards:", body?.startDate);
+          console.log("end date chart view cards:", body?.endDate);
           console.log(
-            "start date chart view cards:",
-            startDate
+            "format start:",
+            dayjs(body?.startDate).format("YYYY-MM-DD")
           );
-          console.log(
-            "end date chart view cards:",
-            endDate
-          );
+          console.log("format end:", dayjs(body?.endDate).format("YYYY-MM-DD"));
           sales = await getAllSalesNew(
-            formattedStart,
-            formattedEnd,
+            dayjs(body?.startDate).format("YYYY-MM-DD"),
+            dayjs(body?.endDate).format("YYYY-MM-DD"),
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
           // transactions = await getAllTransactions(

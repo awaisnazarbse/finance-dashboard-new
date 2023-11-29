@@ -3,6 +3,10 @@ import { Button, Select, DatePicker, Input, AutoComplete } from "antd";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const { RangePicker } = DatePicker;
 
@@ -23,7 +27,7 @@ const TopBar = ({
   offersLoading,
   userApiKeys,
   setMarketplace,
-  marketplace,
+  marketplace
 }) => {
   console.log("offer in chartview", offers);
   const [openRangePicker, setOpenRangePicker] = useState(false);
@@ -123,18 +127,9 @@ const TopBar = ({
               // setEndDate(
               //   new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
               // );
-              setStartDate(
-                new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-              );
-              setEndDate(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth() + 1,
-                  0
-                )
-              );
-              // setStartDate(dayjs().startOf("month"));
-              // setEndDate(dayjs().endOf("month"));
+              const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+              setStartDate(dayjs().startOf("month").tz(userTimezone));
+              setEndDate(dayjs().endOf("month").tz(userTimezone));
               setAggregatedBy("Weekly");
               setOpenRangePicker(false);
             }
