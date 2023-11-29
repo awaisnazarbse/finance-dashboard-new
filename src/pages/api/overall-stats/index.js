@@ -350,11 +350,11 @@ export default async function handler(req, res) {
         } else {
           console.log(
             "start date chart view cards:",
-            dayjs(body?.startDate).format("YYYY-MM-DD")
+            dayjs(body?.startDate).toDate().toDateString()
           );
           console.log(
             "end date chart view cards:",
-            dayjs(body?.endDate).format("YYYY-MM-DD")
+            dayjs(body?.endDate).toDate().toDateString()
           );
           sales = await getAllSalesNew(
             dayjs(body?.startDate).format("YYYY-MM-DD"),
