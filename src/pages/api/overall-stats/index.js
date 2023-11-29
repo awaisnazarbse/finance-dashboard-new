@@ -7,6 +7,10 @@ import getAllTransactions from "@/utils/getAllTransactions";
 import getCog from "@/utils/getCog";
 import getCogNew from "@/utils/getCogNew";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export default async function handler(req, res) {
   const body = JSON.parse(req.body);
@@ -350,11 +354,11 @@ export default async function handler(req, res) {
         } else {
           console.log(
             "start date chart view cards:",
-            dayjs(body?.startDate).toDate().toDateString()
+            dayjs(body?.startDate).tz('America/New_York').format("YYYY-MM-DD")
           );
           console.log(
             "end date chart view cards:",
-            dayjs(body?.endDate).toDate().toDateString()
+            dayjs(body?.endDate).tz('America/New_York').format("YYYY-MM-DD")
           );
           sales = await getAllSalesNew(
             dayjs(body?.startDate).format("YYYY-MM-DD"),
