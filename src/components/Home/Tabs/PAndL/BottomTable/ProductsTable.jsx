@@ -4,6 +4,8 @@ import DetailsModal from "./DetailsModal";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import offersApi from "@/lib/offers";
+import dayjs from "dayjs";
+import expensesApi from "@/lib/expense";
 
 const ProductsTable = ({
   dates,
@@ -21,7 +23,8 @@ const ProductsTable = ({
   userApiKeys,
   essentialsLoading,
   bottomTableDates,
-  bottomTableDuration
+  bottomTableDuration,
+  setProductsData,
 }) => {
   const { user } = useAuth();
 
@@ -45,7 +48,14 @@ const ProductsTable = ({
       const offersWithCOG = await Promise.all(
         res.data?.map(async (offer) => {
           const cog = await offersApi.getOfferCOG(offer?.offer_id);
-          return { ...offer, cog };
+          const expense = await expensesApi.getExpensesByOfferId(
+            offer?.offer_id,
+            {
+              start: dayjs(bottomTableDates[0]).format("DD MMM YYYY"),
+              end: dayjs(bottomTableDates[1]).format("DD MMM YYYY"),
+            }
+          );
+          return { ...offer, cog, expense };
         })
       );
       // const res = await axios.post(
@@ -61,6 +71,7 @@ const ProductsTable = ({
       //     uid: user?.uid,
       //   }
       // );
+      setProductsData(offersWithCOG);
       return offersWithCOG;
     },
     {

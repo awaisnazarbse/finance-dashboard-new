@@ -1,27 +1,14 @@
-import expensesApi from "@/lib/expense";
-import calculateTotalExpense from "@/utils/calculateTotalExpense";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Button,
-  Checkbox,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Select,
-  message,
-} from "antd";
-import dayjs from "dayjs";
-import { serverTimestamp } from "firebase/firestore";
-import Image from "next/image";
+import { Checkbox, DatePicker, Modal } from "antd";
 import { useState } from "react";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const SaveSettingModal = (props) => {
-  const queryClient = useQueryClient();
   const [cogText, setCogText] = useState(true);
   const [orderColumnText, setOrderColumnText] = useState(true);
   const [changeOrderedColumn, setChangeOrderedColumn] = useState(false);
+  const [newCOG, setNewCOG] = useState(false);
+  const [newBatchStartDate, setNewBatchStartDate] = useState(null);
+  const [previousBatchReminder, setPreviousBatchReminder] = useState(false);
 
   const handleSubmit = (values) => {};
   return (
@@ -36,7 +23,11 @@ const SaveSettingModal = (props) => {
       <div className="flex flex-col space-y-4 w-full">
         <div className="flex flex-col w-full">
           <div className="flex justify-between items-center w-full py-3">
-            <Checkbox disabled={props?.cogDisabled}>
+            <Checkbox
+              disabled={props?.cogDisabled}
+              checked={newCOG}
+              onChange={(e) => setNewCOG(e.target.checked)}
+            >
               Add a new batch entry with COGs to the Products page
             </Checkbox>
             <AiOutlineExclamationCircle
@@ -61,9 +52,17 @@ const SaveSettingModal = (props) => {
             >
               Start date for the new batch
             </span>
-            <DatePicker className="w-[60%]" disabled={props?.cogDisabled} />
+            <DatePicker
+              onChange={(e) => setNewBatchStartDate(e?.toDate())}
+              className="w-[60%]"
+              disabled={props?.cogDisabled}
+            />
           </div>
-          <Checkbox disabled={props?.cogDisabled}>
+          <Checkbox
+            disabled={props?.cogDisabled}
+            checked={previousBatchReminder}
+            onChange={(e) => setPreviousBatchReminder(e.target.checked)}
+          >
             Account for remainder of stock from previous batch
           </Checkbox>
         </div>
@@ -104,9 +103,16 @@ const SaveSettingModal = (props) => {
             Cancel
           </button>
           <button
-            onClick={() => props.onSave({ changeOrderedColumn })}
+            onClick={() =>
+              props.onSave({
+                changeOrderedColumn,
+                newCOG,
+                newBatchStartDate,
+                previousBatchReminder,
+              })
+            }
             className="border border-primary p-2 px-4 bg-primary text-white"
-          disabled={props?.submitting}
+            disabled={props?.submitting}
           >
             {props?.submitting ? "Saving..." : "Save"}
           </button>

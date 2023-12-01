@@ -3,6 +3,7 @@ import Loader from "@/components/utils/Loader";
 import { useAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/layout";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import Head from "next/head";
 import { useState } from "react";
 
@@ -11,15 +12,20 @@ export default function Transactions() {
   const [active, setActive] = useState("Transactions");
   const tabs = ["Transactions"];
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [duration, setDuration] = useState("Last 3 Months");
   const { data, isLoading } = useQuery(
-    ["transactions", currentPage],
+    ["transactions", currentPage, startDate, endDate, duration],
     async () => {
       const response = await (
         await fetch("/api/transactions", {
           body: JSON.stringify({
             apiKey: user?.apiKey,
             page: currentPage,
+            duration,
+            startDate,
+            endDate,
           }),
           method: "POST",
         })
@@ -29,12 +35,26 @@ export default function Transactions() {
     },
     {
       enabled: !!user,
+      refetchOnWindowFocus: false,
     }
   );
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  const { data: balances, isLoading: balancesLoading } = useQuery(
+    ["balances"],
+    async () => {
+      const res = await axios.post("/api/transactions/balance", {
+        apiKey: user?.apiKey,
+      });
+      return res.data;
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // if (isLoading) {
+  //   return <Loader />;
+  // }
 
   return (
     <>
@@ -51,10 +71,18 @@ export default function Transactions() {
           {active === "Transactions" && (
             <TransactionsTab
               data={data?.data?.transactions}
+              disbursment={data?.disbursment}
               pendingBalance={data?.pendingBalance}
               pageSummary={data?.data?.page_summary}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              setDuration={setDuration}
+              loading={isLoading}
+              balancesLoading={balancesLoading}
+              balances={balances}
+              graphData={data?.groupedDisbursment}
             />
           )}
         </main>

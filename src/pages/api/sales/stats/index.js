@@ -6,6 +6,7 @@ import getAllSalesNew from "@/utils/getAllSalesNew";
 import getAllTransactions from "@/utils/getAllTransactions";
 import getCog from "@/utils/getCog";
 import getCogNew from "@/utils/getCogNew";
+import getDateRangeFormatted from "@/utils/getDateRangeFormatted";
 import dayjs from "dayjs";
 
 export default async function handler(req, res) {
@@ -16,6 +17,11 @@ export default async function handler(req, res) {
     let storageFee = 0;
     let manualReversalFee = 0;
     let transactions = [];
+    const { startDate, endDate } = getDateRangeFormatted(
+      body?.duration,
+      body?.startDate,
+      body?.endDate
+    );
     // if (body?.duration !== "This Year") {
     //   const transactions = await getAllTransactions(
     //     dayjs(body?.startDate).format("YYYY-MM-DD"),
@@ -117,13 +123,13 @@ export default async function handler(req, res) {
           const userApiKeys = await userApi.getActiveUserAPIKeys(body?.uid);
           for (let it = 0; it < userApiKeys?.length; it++) {
             let newSales = await getAllSalesNew(
-              dayjs(body?.startDate).format("YYYY-MM-DD"),
-              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              startDate,
+              endDate,
               userApiKeys[it]?.apiKey
             );
             let newTransactions = await getAllTransactions(
-              dayjs(body?.startDate).format("YYYY-MM-DD"),
-              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              startDate,
+              endDate,
               userApiKeys[it]?.apiKey
             );
 
@@ -131,14 +137,10 @@ export default async function handler(req, res) {
             transactions = transactions?.concat(newTransactions);
           }
         } else {
-          data = await getAllSalesNew(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
-            body?.marketplace
-          );
+          data = await getAllSalesNew(startDate, endDate, body?.marketplace);
           transactions = await getAllTransactions(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
+            startDate,
+            endDate,
             body?.marketplace
           );
         }
@@ -202,7 +204,10 @@ export default async function handler(req, res) {
           }
           if (
             sale?.sale_status !== "Cancelled by Customer" &&
-            sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
           ) {
             sales += sale?.selling_price;
             units += sale?.quantity;
@@ -297,8 +302,8 @@ export default async function handler(req, res) {
           const userApiKeys = await userApi.getActiveUserAPIKeys(body?.uid);
           for (let it = 0; it < userApiKeys?.length; it++) {
             let newSales = await getAllSalesByProduct(
-              dayjs(body?.startDate).format("YYYY-MM-DD"),
-              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              startDate,
+              endDate,
               userApiKeys[it]?.apiKey,
               true,
               body?.productTitle
@@ -308,8 +313,8 @@ export default async function handler(req, res) {
           }
         } else {
           data = await getAllSalesByProduct(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
+            startDate,
+            endDate,
             body?.marketplace,
             true,
             body?.productTitle
@@ -349,7 +354,10 @@ export default async function handler(req, res) {
         data?.map((sale) => {
           if (
             sale?.sale_status !== "Cancelled by Customer" &&
-            sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
           ) {
             sales += sale?.selling_price;
             units += sale?.quantity;

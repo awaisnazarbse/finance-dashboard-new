@@ -252,7 +252,10 @@ async function groupSalesByMonths(salesArray, transactions) {
         if (parameter === "Sales") {
           if (
             sale?.sale_status !== "Cancelled by Customer" &&
-            sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
           ) {
             groupedData[parameter][monthKey] += sale?.selling_price;
           }
@@ -260,7 +263,10 @@ async function groupSalesByMonths(salesArray, transactions) {
         if (parameter === "Units Sold") {
           if (
             sale?.sale_status !== "Cancelled by Customer" &&
-            sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
           ) {
             groupedData[parameter][monthKey] += sale?.quantity;
           }
@@ -537,7 +543,10 @@ async function groupSalesByWeeks(salesArray) {
           if (parameter === "Sales") {
             if (
               sale?.sale_status !== "Cancelled by Customer" &&
-              sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               groupedData[parameter][weekKey] += sale.selling_price;
             }
@@ -545,7 +554,10 @@ async function groupSalesByWeeks(salesArray) {
           if (parameter === "Units Sold") {
             if (
               sale?.sale_status !== "Cancelled by Customer" &&
-              sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               groupedData[parameter][weekKey] += sale.quantity;
             }
@@ -770,7 +782,10 @@ async function groupSalesByLast30Days(salesArray) {
           if (parameter === "Sales") {
             if (
               sale?.sale_status !== "Cancelled by Customer" &&
-              sale?.sale_status !== "Cancelled by Takealot"
+              sale?.sale_status !== "Cancelled by Takealot" &&
+              sale?.sale_status !== "Cancelled by Seller" &&
+              sale?.sale_status !== "Cancelled - Late Delivery" &&
+              sale?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               groupedData[parameter][dayKey] += sale.selling_price;
             }
@@ -778,7 +793,10 @@ async function groupSalesByLast30Days(salesArray) {
           if (parameter === "Units Sold") {
             if (
               sale?.sale_status !== "Cancelled by Customer" &&
-              sale?.sale_status !== "Cancelled by Takealot"
+            sale?.sale_status !== "Cancelled by Takealot" &&
+            sale?.sale_status !== "Cancelled by Seller" &&
+            sale?.sale_status !== "Cancelled - Late Delivery" &&
+            sale?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               groupedData[parameter][dayKey] += sale.quantity;
             }

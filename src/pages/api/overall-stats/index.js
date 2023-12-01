@@ -6,11 +6,8 @@ import getAllSalesNew from "@/utils/getAllSalesNew";
 import getAllTransactions from "@/utils/getAllTransactions";
 import getCog from "@/utils/getCog";
 import getCogNew from "@/utils/getCogNew";
+import getDateRangeFormatted from "@/utils/getDateRangeFormatted";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export default async function handler(req, res) {
   const body = JSON.parse(req.body);
@@ -21,6 +18,13 @@ export default async function handler(req, res) {
     let storageFee = 0;
     let manualReversalFee = 0;
     let transactions = [];
+    const { startDate, endDate } = getDateRangeFormatted(
+      body?.duration,
+      body?.startDate,
+      body?.endDate
+    );
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
     // if (body?.duration !== "This Year") {
     //   const transactions = await getAllTransactions(
     //     dayjs(body?.startDate).format("YYYY-MM-DD"),
@@ -102,20 +106,23 @@ export default async function handler(req, res) {
             );
           } else {
             sales = await getAllSalesNew(
-              dayjs(body?.startDate).format("YYYY-MM-DD"),
-              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              startDate,
+              endDate,
               userApis[it]?.apiKey
             );
             transactions = await getAllTransactions(
-              dayjs(body?.startDate).format("YYYY-MM-DD"),
-              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              startDate,
+              endDate,
               userApis[it]?.apiKey
             );
           }
           sales?.forEach((e) => {
             if (
               e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               totalRevenue += e?.selling_price;
               unitSold += e?.quantity;
@@ -128,7 +135,10 @@ export default async function handler(req, res) {
             if (e?.dc === "JHB") {
               if (
                 e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot"
+                e?.sale_status !== "Cancelled by Takealot" &&
+                e?.sale_status !== "Cancelled by Seller" &&
+                e?.sale_status !== "Cancelled - Late Delivery" &&
+                e?.sale_status !== "Cancelled - Inbound Exception"
               ) {
                 jhbRevenue += e?.selling_price;
                 jhbUnitSold += e?.quantity;
@@ -143,7 +153,10 @@ export default async function handler(req, res) {
             if (e?.dc === "CPT") {
               if (
                 e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot"
+                e?.sale_status !== "Cancelled by Takealot" &&
+                e?.sale_status !== "Cancelled by Seller" &&
+                e?.sale_status !== "Cancelled - Late Delivery" &&
+                e?.sale_status !== "Cancelled - Inbound Exception"
               ) {
                 cptRevenue += e?.selling_price;
                 cptUnitSold += e?.quantity;
@@ -192,8 +205,8 @@ export default async function handler(req, res) {
             sales = first6MonthsSales?.concat(second6MonthsSales);
           } else {
             sales = await getAllSalesByProduct(
-              dayjs(body?.startDate).format("YYYY-MM-DD"),
-              dayjs(body?.endDate).format("YYYY-MM-DD"),
+              startDate,
+              endDate,
               userApis[it]?.apiKey,
               true,
               body?.productTitle
@@ -203,7 +216,10 @@ export default async function handler(req, res) {
           sales?.forEach((e) => {
             if (
               e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               totalRevenue += e?.selling_price;
               unitSold += e?.quantity;
@@ -216,7 +232,10 @@ export default async function handler(req, res) {
             if (e?.dc === "JHB") {
               if (
                 e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot"
+                e?.sale_status !== "Cancelled by Takealot" &&
+                e?.sale_status !== "Cancelled by Seller" &&
+                e?.sale_status !== "Cancelled - Late Delivery" &&
+                e?.sale_status !== "Cancelled - Inbound Exception"
               ) {
                 jhbRevenue += e?.selling_price;
                 jhbUnitSold += e?.quantity;
@@ -231,7 +250,10 @@ export default async function handler(req, res) {
             if (e?.dc === "CPT") {
               if (
                 e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot"
+                e?.sale_status !== "Cancelled by Takealot" &&
+                e?.sale_status !== "Cancelled by Seller" &&
+                e?.sale_status !== "Cancelled - Late Delivery" &&
+                e?.sale_status !== "Cancelled - Inbound Exception"
               ) {
                 cptRevenue += e?.selling_price;
                 cptUnitSold += e?.quantity;
@@ -352,40 +374,16 @@ export default async function handler(req, res) {
             second6MonthsTransactions
           );
         } else {
-          let startDate = null;
-          let endDate = null;
-          if (body?.duration === "This Month") {
-            startDate = dayjs().startOf("month").format("YYYY-MM-DD");
-            endDate = dayjs().endOf("month").format("YYYY-MM-DD");
-          } else if (body?.duration === "Last Month") {
-            startDate = dayjs()
-              .subtract(1, "month")
-              .startOf("month")
-              .format("YYYY-MM-DD");
-            endDate = dayjs()
-              .subtract(1, "month")
-              .endOf("month")
-              .format("YYYY-MM-DD");
-          } else if (body?.duration === "Today") {
-            startDate = dayjs().format("YYYY-MM-DD");
-            endDate = dayjs().format("YYYY-MM-DD");
-          } else if (body?.duration === "Yesterday") {
-            startDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
-            endDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
-          } else {
-            startDate = dayjs(body?.startDate).format("YYYY-MM-DD");
-            endDate = dayjs(body?.endDate).format("YYYY-MM-DD");
-          }
           sales = await getAllSalesNew(
             startDate,
             endDate,
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
-          // transactions = await getAllTransactions(
-          //   dayjs(body?.startDate).format("YYYY-MM-DD"),
-          //   dayjs(body?.endDate).format("YYYY-MM-DD"),
-          //   "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
-          // );
+          transactions = await getAllTransactions(
+            startDate,
+            endDate,
+            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          );
         }
         let totalRevenue = 0;
         let takealotFee = 0;
@@ -419,7 +417,10 @@ export default async function handler(req, res) {
           }
           if (
             e?.sale_status !== "Cancelled by Customer" &&
-            e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
           ) {
             // console.log("totalRevenue", totalRevenue);
             totalRevenue += e?.selling_price;
@@ -434,7 +435,10 @@ export default async function handler(req, res) {
           if (e?.dc === "JHB") {
             if (
               e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               jhbRevenue += e?.selling_price;
               jhbUnitSold += e?.quantity;
@@ -451,7 +455,10 @@ export default async function handler(req, res) {
           if (e?.dc === "CPT") {
             if (
               e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               cptRevenue += e?.selling_price;
               cptUnitSold += e?.quantity;
@@ -561,8 +568,8 @@ export default async function handler(req, res) {
           sales = first6MonthsSales?.concat(second6MonthsSales);
         } else {
           sales = await getAllSalesByProduct(
-            dayjs(body?.startDate).format("YYYY-MM-DD"),
-            dayjs(body?.endDate).format("YYYY-MM-DD"),
+            startDate,
+            endDate,
             API_TOKEN,
             true,
             body?.productTitle
@@ -589,7 +596,10 @@ export default async function handler(req, res) {
         sales?.forEach((e) => {
           if (
             e?.sale_status !== "Cancelled by Customer" &&
-            e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
           ) {
             totalRevenue += e?.selling_price;
             unitSold += e?.quantity;
@@ -602,7 +612,10 @@ export default async function handler(req, res) {
           if (e?.dc === "JHB") {
             if (
               e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               jhbRevenue += e?.selling_price;
               jhbUnitSold += e?.quantity;
@@ -617,7 +630,10 @@ export default async function handler(req, res) {
           if (e?.dc === "CPT") {
             if (
               e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot"
+              e?.sale_status !== "Cancelled by Takealot" &&
+              e?.sale_status !== "Cancelled by Seller" &&
+              e?.sale_status !== "Cancelled - Late Delivery" &&
+              e?.sale_status !== "Cancelled - Inbound Exception"
             ) {
               cptRevenue += e?.selling_price;
               cptUnitSold += e?.quantity;
@@ -685,16 +701,9 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     console.error("Error:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching data from the API." });
+    res.status(500).json({
+      error: "An error occurred while fetching data from the API.",
+      error: error,
+    });
   }
 }
-
-const formatDate = (inputDate) => {
-  const dateObject = new Date(inputDate);
-  const year = dateObject.getFullYear();
-  const month = `0${dateObject.getMonth() + 1}`.slice(-2);
-  const day = `0${dateObject.getDate()}`.slice(-2);
-  return `${year}-${month}-${day}`;
-};

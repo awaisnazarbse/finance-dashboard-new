@@ -3,12 +3,24 @@ import Image from "next/image";
 
 const TopBar = () => {
   return (
-    <div className="bg-white flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-center md:justify-between w-full p-5">
+    <div
+      className="bg-white flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-center md:justify-between w-full p-3 sticky top-0 z-50"
+      style={{
+        boxShadow: "rgba(0, 0, 0, 0.1) 0px 5px 15px 0px",
+      }}
+    >
       <div className="flex items-center space-x-2">
         <Input
-          prefix={<Image alt="search" src="/icons/search.svg" width={15} height={15} />}
+          prefix={
+            <Image
+              alt="search"
+              src="/icons/search.svg"
+              width={15}
+              height={15}
+            />
+          }
           placeholder="Search here"
-          className="py-3 px-5 text-[#777777] text-base outline-none focus:outline-none border-none focus:border-none"
+          className="py-2 px-5 text-[#777777] text-sm outline-none focus:outline-none border-none focus:border-none"
           style={{
             background: "rgba(21, 105, 189, 0.06)",
           }}
@@ -19,7 +31,7 @@ const TopBar = () => {
             },
           }}
         />
-        <div className="cursor-pointer flex items-center justify-center rounded-[5px] bg-opacity-10 bg-[#F7B614]">
+        {/* <div className="cursor-pointer flex items-center justify-center rounded-[5px] bg-opacity-10 bg-[#F7B614]">
           <svg
             className="cursor-pointer"
             width="57"
@@ -37,9 +49,7 @@ const TopBar = () => {
             />
           </svg>
         </div>
-        {/* </div> */}
         <div className="cursor-pointer flex items-center justify-center px-4 py-3  rounded-[5px] bg-opacity-10 bg-[#F7B614]">
-          {/* <Image src="/icons/sort.svg" width={23} height={23} /> */}
 
           <svg
             width="23"
@@ -53,10 +63,10 @@ const TopBar = () => {
               fill="#F7B614"
             />
           </svg>
-        </div>
+        </div> */}
       </div>
       <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:items-center md:space-x-4">
-        <Select
+        {/* <Select
           placeholder="Icons"
           suffixIcon={
             <Image src="/icons/downarrow-black.svg" width={15} height={15} />
@@ -79,15 +89,15 @@ const TopBar = () => {
             padding: "10px",
             borderRadius: "5px",
           }}
-        />
+        /> */}
         <div
           className="flex items-center justify-between space-x-5 rounded-[5px] p-2"
           style={{
             background: "rgba(21, 105, 189, 0.06)",
           }}
         >
-          <span className="text-[0.8rem] md:text-base">Tracking: 8/10</span>
-          <Button className="btn-primay md:px-5 md:py-[1.2rem] flex items-center justify-center border-none outline-none text-white text-sm md:text-base bg-[#1569BD] w-fit">
+          <span className="text-[0.8rem] md:text-sm">Tracking: 8/10</span>
+          <Button className="btn-primay md:px-5 md:py-[1.2rem] flex items-center justify-center border-none outline-none text-white text-sm md:text-sm bg-primary w-fit">
             View Details
           </Button>
         </div>

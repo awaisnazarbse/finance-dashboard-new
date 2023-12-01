@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import userApi from "@/lib/user";
 import offersApi from "@/lib/offers";
+import expensesApi from "@/lib/expense";
+import dayjs from "dayjs";
 
 const ProductsTable = ({
   dates,
@@ -21,6 +23,7 @@ const ProductsTable = ({
   startDate,
   endDate,
   essentialsLoading,
+  setData,
 }) => {
   const { user } = useAuth();
 
@@ -59,9 +62,17 @@ const ProductsTable = ({
         res.data?.map(async (offer) => {
           const cog = await offersApi.getOfferCOG(offer?.offer_id);
 
-          return { ...offer, cog };
+          const expense = await expensesApi.getExpensesByOfferId(
+            offer?.offer_id,
+            {
+              start: dayjs(startDate).format("DD MMM YYYY"),
+              end: dayjs(endDate).format("DD MMM YYYY"),
+            }
+          );
+          return { ...offer, cog, expense };
         })
       );
+      setData(offersWithCOG);
       return offersWithCOG;
     },
     {

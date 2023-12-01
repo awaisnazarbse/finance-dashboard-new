@@ -245,7 +245,7 @@ const NetProfit = ({
         <hr />
         <Row
           title="Cost Of Goods"
-          value={`R ${data?.cogs}`}
+          value={`R ${Number(data?.cogs).toFixed(2)}`}
           type="body"
           info="= Total cost of goods sold including buying price, shipping and import fees. This sum increases when orders are shipped, decreases when goods are returned by customers and increases again if they are non-sellable stock."
         />

@@ -116,7 +116,7 @@ const DetailsModal = (props) => {
         <hr />
         <Row
           title="Expenses"
-          value={`-`}
+          value={`R ${props?.data?.expense}`}
           type="body"
           info={info.EXPENSE}
           children={

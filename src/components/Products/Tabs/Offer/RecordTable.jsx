@@ -338,6 +338,10 @@ const RecordsTable = ({
       // filteredValue: [searchedText],
       onFilter: (value, record) =>
         record?.title?.toString().toLowerCase().includes(value.toLowerCase()) ||
+        record?.product_title
+          ?.toString()
+          .toLowerCase()
+          .includes(value.toLowerCase()) ||
         record?.sku?.toString()?.includes(value) ||
         record?.tsin_id?.toString()?.includes(value),
       filterDropdown: ({
@@ -401,6 +405,7 @@ const RecordsTable = ({
         <SearchOutlined
           style={{
             color: filtered ? "#1677ff" : undefined,
+            fontSize: "1rem",
           }}
         />
       ),
@@ -681,7 +686,7 @@ const RecordsTable = ({
 
     queryClient.setQueryData(["offers"], (existingData) => {
       if (existingData) {
-        const updatedData = existingData?.map((offer) => {
+        const updatedData = existingData?.offers?.map((offer) => {
           if (offer?.offer_id === row?.offer_id) {
             return {
               ...offer,
@@ -691,7 +696,7 @@ const RecordsTable = ({
           }
           return offer;
         });
-        return updatedData;
+        return { ...existingData, offers: updatedData };
       }
     });
   };
@@ -704,13 +709,13 @@ const RecordsTable = ({
 
     queryClient.setQueryData(["offers"], (existingData) => {
       if (existingData) {
-        const updatedData = existingData?.map((offer) => {
+        const updatedData = existingData?.offers?.map((offer) => {
           if (offer?.offer_id === row?.offer_id) {
             return { ...offer, cog: row?.cog };
           }
           return offer;
         });
-        return updatedData;
+        return { ...existingData, offers: updatedData };
       }
     });
   };

@@ -6,6 +6,8 @@ import axios from "axios";
 import userApi from "@/lib/user";
 import offersApi from "@/lib/offers";
 import purchasedOrdersApi from "@/lib/purchasedOrders";
+import expensesApi from "@/lib/expense";
+import dayjs from "dayjs";
 
 const ProductsTable = ({
   startDate,
@@ -23,7 +25,7 @@ const ProductsTable = ({
   productTitle,
   duration,
   marketplace,
-  essentialsLoading
+  essentialsLoading,
 }) => {
   const { user } = useAuth();
 
@@ -73,9 +75,16 @@ const ProductsTable = ({
       // console.log("product data", response.data);
       const offersWithCOG = await Promise.all(
         response.data?.map(async (offer) => {
-          // const cog = 0
-          const cog = await offersApi.getOfferCOG(offer?.offer_id);
-          return { ...offer, cog };
+          const cog = 0;
+          // const cog = await offersApi.getOfferCOG(offer?.offer_id);
+          const expense = await expensesApi.getExpensesByOfferId(
+            offer?.offer_id,
+            {
+              start: dayjs(startDate).format("DD MMM YYYY"),
+              end: dayjs(endDate).format("DD MMM YYYY"),
+            }
+          );
+          return { ...offer, cog, expense };
         })
       );
       setData(offersWithCOG);

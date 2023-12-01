@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import purchasedOrdersApi from "@/lib/purchasedOrders";
 import offersApi from "@/lib/offers";
 import ProductDetails from "@/components/utils/ProductDetails";
+import cancelOrderStatus from "@/constants/cancelOrderStatus";
 
 const OrderItemsTable = dynamic(() => import("./OrderItemsTable"));
 
@@ -560,10 +561,8 @@ const RecordsTable = ({
   ]);
   const [selectedColumns, setSelectedColumns] = useState([
     "Unit sold",
-    "Refunds",
     "Sales",
     "Promo",
-    "Refund cost",
     "Takealot fee",
     "Cost of goods",
     "Gross profit",
@@ -572,6 +571,8 @@ const RecordsTable = ({
   ]);
   const tabs = ["Products", "Order Items"];
   const [columnsModal, setColumnsModal] = useState(false);
+  const [data, setData] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
 
   const exportData = () => {
     if (active === "Products") {
@@ -584,17 +585,32 @@ const RecordsTable = ({
         if (selectedColumns?.includes("Sales")) {
           data["Sales (R)"] = d?.sales?.toFixed(2);
         }
+        if (selectedColumns?.includes("Unit sold")) {
+          data["Unit sold"] = d?.unitSold;
+        }
         if (selectedColumns?.includes("Promo")) {
           data["Promo (R)"] = d?.promo?.toFixed(2);
         }
         if (selectedColumns?.includes("Takealot fee")) {
           data["Takealot fee (R)"] = d?.fee?.toFixed(2);
         }
-        if (selectedColumns?.includes("Cost of goods")) {
-          data["Cost of goods (R)"] = "-";
+        if (selectedColumns?.includes("Expense")) {
+          data["Expense"] = "-";
+        }
+        if (selectedColumns?.includes("Refund cost")) {
+          data["Refund cost (R)"] = Number(record?.refundCost).toFixed(2);
+        }
+        if (selectedColumns?.includes("Refunds")) {
+          data["Refunds"] = d?.refundedUnits;
         }
         if (selectedColumns?.includes("Gross profit")) {
           data["Gross profit (R)"] = d?.sales?.toFixed(2) - d?.fee?.toFixed(2);
+        }
+        if (selectedColumns?.includes("Cost of goods")) {
+          data["Cost of goods (R)"] = Number(d?.cog).toFixed(2);
+        }
+        if (selectedColumns?.includes("Net profit")) {
+          data["Net profit (R)"] = `${Number(d?.sales - d?.fee).toFixed(2)}`;
         }
         if (selectedColumns?.includes("Margin")) {
           data["Margin (%)"] = (((d?.sales - d?.fee) / d?.sales) * 100).toFixed(
@@ -602,9 +618,10 @@ const RecordsTable = ({
           );
         }
         if (selectedColumns?.includes("ROI")) {
-          data["ROI (R)"] = "-";
+          data["ROI (R)"] = `${Number(
+            ((d?.sales - d?.fee) / d?.cog) * 100
+          ).toFixed(2)}`;
         }
-
         // console.log("data", data);
 
         dataToExport.push(data);
@@ -624,7 +641,14 @@ const RecordsTable = ({
         };
 
         if (selectedColumns?.includes("Sales")) {
-          data["Sales (R)"] = d?.selling_price?.toFixed(2);
+          data["Sales (R)"] = !cancelOrderStatus.includes(d?.sale_status)
+            ? d?.selling_price
+            : "-";
+        }
+        if (selectedColumns?.includes("Unit sold")) {
+          data["Unit sold"] = !cancelOrderStatus.includes(d?.sale_status)
+            ? d?.quantity
+            : "-";
         }
         if (selectedColumns?.includes("Promo")) {
           data["Promo (R)"] = d?.promotion
@@ -634,13 +658,31 @@ const RecordsTable = ({
         if (selectedColumns?.includes("Takealot fee")) {
           data["Takealot fee (R)"] = d?.total_fee?.toFixed(2);
         }
-        if (selectedColumns?.includes("Cost of goods")) {
-          data["Cost of goods (R)"] = "-";
+        if (selectedColumns?.includes("Expense")) {
+          data["Expense (R)"] = "-";
+        }
+        if (selectedColumns?.includes("Refund cost")) {
+          data["Refund cost (R)"] = cancelOrderStatus.includes(d?.sale_status)
+            ? (d?.selling_price - d?.total_fee).toFixed(2)
+            : "-";
+        }
+        if (selectedColumns?.includes("Refunds")) {
+          data["Returns"] = cancelOrderStatus.includes(d?.sale_status)
+            ? d?.quantity
+            : "-";
         }
         if (selectedColumns?.includes("Gross profit")) {
           data["Gross profit (R)"] = (d?.selling_price - d?.total_fee)?.toFixed(
             2
           );
+        }
+        if (selectedColumns?.includes("Cost of goods")) {
+          data["Cost of goods (R)"] = Number(d?.cog).toFixed(2);
+        }
+        if (selectedColumns?.includes("Net profit")) {
+          data["Net profit (R)"] = (
+            record?.selling_price - record?.total_fee
+          )?.toFixed(2);
         }
         if (selectedColumns?.includes("Margin")) {
           data["Margin (%)"] = (
@@ -649,7 +691,9 @@ const RecordsTable = ({
           ).toFixed(2);
         }
         if (selectedColumns?.includes("ROI")) {
-          data["ROI (R)"] = "-";
+          data["ROI (R)"] = Number(
+            ((d?.selling_price * d?.quantity - d?.total_fee) / d?.cog) * 100
+          ).toFixed(2);
         }
 
         // console.log("data", data);
@@ -773,6 +817,7 @@ const RecordsTable = ({
             startDate={startDate}
             endDate={endDate}
             essentialsLoading={essentialsLoading}
+            setData={setData}
           />
         )}
         {active === "Order Items" && (
@@ -780,6 +825,7 @@ const RecordsTable = ({
             dates={dates}
             searchedText={searchedText}
             columns={orderItemColumns}
+            setData={setOrderItems}
             setRecord={setRecord}
             setModal={setModal}
             record={record}

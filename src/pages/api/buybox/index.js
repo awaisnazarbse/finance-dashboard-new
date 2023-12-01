@@ -1,12 +1,12 @@
 import extractPLIDFromURL from "@/utils/extractPLIDFromUrl";
-import fetch from "node-fetch";
 
 export default async function handler(req, res) {
-  const body = JSON.parse(req.body);
+  const body = req.body;
 
   try {
     const apiUrl = "https://seller-api.takealot.com/v2/offers?page_size=100";
-    const API_TOKEN = body?.apiKey;
+    const API_TOKEN =
+      "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5";
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {

@@ -28,7 +28,10 @@ const groupDataByHourly = (salesData, expensesData) => {
     // console.log("sale", sale);
     if (
       sale?.sale_status !== "Cancelled by Customer" &&
-      sale?.sale_status !== "Cancelled by Takealot"
+      sale?.sale_status !== "Cancelled by Takealot" &&
+      sale?.sale_status !== "Cancelled by Seller" &&
+      sale?.sale_status !== "Cancelled - Late Delivery" &&
+      sale?.sale_status !== "Cancelled - Inbound Exception"
     ) {
       hourlyData[hourKey].rev += sale.selling_price;
       hourlyData[hourKey].unitSold += sale.quantity;
@@ -93,7 +96,10 @@ function groupDataByDaily(salesData, expensesData) {
 
     if (
       sale?.sale_status !== "Cancelled by Customer" &&
-      sale?.sale_status !== "Cancelled by Takealot"
+      sale?.sale_status !== "Cancelled by Takealot" &&
+      sale?.sale_status !== "Cancelled by Seller" &&
+      sale?.sale_status !== "Cancelled - Late Delivery" &&
+      sale?.sale_status !== "Cancelled - Inbound Exception"
     ) {
       dailyData[dayKey].rev += sale.selling_price;
       dailyData[dayKey].unitSold += sale.quantity;
@@ -161,7 +167,10 @@ function groupDataByWeekly(salesData, expensesData) {
     }
     if (
       sale?.sale_status !== "Cancelled by Customer" &&
-      sale?.sale_status !== "Cancelled by Takealot"
+      sale?.sale_status !== "Cancelled by Takealot" &&
+      sale?.sale_status !== "Cancelled by Seller" &&
+      sale?.sale_status !== "Cancelled - Late Delivery" &&
+      sale?.sale_status !== "Cancelled - Inbound Exception"
     ) {
       weeklyData[weekKey].rev += sale.selling_price;
       weeklyData[weekKey].unitSold += sale.quantity;
@@ -219,7 +228,10 @@ function groupDataByMonthly(salesData, expensesData) {
 
     if (
       sale?.sale_status !== "Cancelled by Customer" &&
-      sale?.sale_status !== "Cancelled by Takealot"
+      sale?.sale_status !== "Cancelled by Takealot" &&
+      sale?.sale_status !== "Cancelled by Seller" &&
+      sale?.sale_status !== "Cancelled - Late Delivery" &&
+      sale?.sale_status !== "Cancelled - Inbound Exception"
     ) {
       monthlyData[formattedMonth].rev += sale.selling_price;
       monthlyData[formattedMonth].unitSold += sale.quantity;
@@ -279,7 +291,10 @@ function groupDataByQuarterly(salesData, expensesData) {
     }
     if (
       sale?.sale_status !== "Cancelled by Customer" &&
-      sale?.sale_status !== "Cancelled by Takealot"
+      sale?.sale_status !== "Cancelled by Takealot" &&
+      sale?.sale_status !== "Cancelled by Seller" &&
+      sale?.sale_status !== "Cancelled - Late Delivery" &&
+      sale?.sale_status !== "Cancelled - Inbound Exception"
     ) {
       quarterlyData[quarterKey].rev += sale.selling_price;
       quarterlyData[quarterKey].unitSold += sale.quantity;

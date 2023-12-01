@@ -247,27 +247,29 @@ const ColumnsModal = ({
         render: (_, record) => (
           <div className="w-full flex justify-center items-center">
             <span className="text-[11px] text-center">
-              {record?.expense ? record?.expense : "-"}
+              {record?.expense ? `R ${record?.expense}` : "-"}
             </span>
           </div>
         ),
       });
 
-      // newOrderItemColumns.push({
-      //   title: (
-      //     <div className="flex items-center space-x-4 justify-center">
-      //       <span className="text-[11px] text-[#777777] text-center">
-      //         Units Sold
-      //       </span>
-      //     </div>
-      //   ),
-      //   dataIndex: "unitSold",
-      //   render: (_, record) => (
-      //     <div className="w-full flex justify-center items-center">
-      //       <span className="text-[11px] text-center">{record?.quantity}</span>
-      //     </div>
-      //   ),
-      // });
+      newOrderItemColumns.push({
+        title: (
+          <div className="flex items-center space-x-4 justify-center">
+            <span className="text-[11px] text-[#777777] text-center">
+              Expense
+            </span>
+          </div>
+        ),
+        dataIndex: "expense",
+        render: (_, record) => (
+          <div className="w-full flex justify-center items-center">
+            <span className="text-[11px] text-center">
+              {record?.expense ? `R ${record?.expense}` : "-"}
+            </span>
+          </div>
+        ),
+      });
     }
 
     if (e?.includes("Sales")) {

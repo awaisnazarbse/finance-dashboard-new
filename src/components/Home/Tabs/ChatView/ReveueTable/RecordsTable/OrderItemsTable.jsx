@@ -5,6 +5,8 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import userApi from "@/lib/user";
 import offersApi from "@/lib/offers";
+import dayjs from "dayjs";
+import expensesApi from "@/lib/expense";
 
 const OrderItemsTable = ({
   searchedText,
@@ -57,9 +59,16 @@ const OrderItemsTable = ({
       console.log("order items", res.data);
       const offersWithCOG = await Promise.all(
         res.data?.map(async (offer) => {
-          // const cog = 0
-          const cog = await offersApi.getOfferCOG(offer?.offer_id);
-          return { ...offer, cog };
+          const cog = 0
+          // const cog = await offersApi.getOfferCOG(offer?.offer_id);
+          const expense = await expensesApi.getExpensesByOfferId(
+            offer?.offer_id,
+            {
+              start: dayjs(startDate).format("DD MMM YYYY"),
+              end: dayjs(endDate).format("DD MMM YYYY"),
+            }
+          );
+          return { ...offer, cog, expense };
         })
       );
       setData(offersWithCOG);
@@ -72,7 +81,7 @@ const OrderItemsTable = ({
   );
 
   return (
-    <div className="flex flex-col md:mt-10 space-y-10">
+    <div className="flex flex-col space-y-10">
       <Table
         loading={isLoading}
         columns={columns}

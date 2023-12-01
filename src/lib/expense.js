@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { db } from "../config/firebase";
 import {
   collection,
@@ -60,7 +61,7 @@ const getExpensesByDateRange = async (range) => {
   const ref = collection(db, "expenses");
   const res = await getDocs(ref);
   let docs = [];
-  console.log("range....", range)
+  console.log("range....", range);
   res.docs.forEach((doc) => {
     if (
       new Date(doc.data().date) <= new Date(range?.start) &&
@@ -74,6 +75,53 @@ const getExpensesByDateRange = async (range) => {
     }
   });
   return docs;
+};
+
+const getExpensesByOfferId = async (offerId, range) => {
+  let expense = 0;
+
+  const ref = collection(db, "expenses");
+  const q = query(ref, where("offer_id", "==", offerId));
+  const res = await getDocs(q);
+
+  if (res.docs?.length > 0) {
+    res.docs.forEach((doc) => {
+      if (
+        new Date(doc.data().date) <= new Date(range?.start) &&
+        new Date(doc.data().date) <= new Date(range?.end) &&
+        new Date(doc.data().endDate) >= new Date(range?.start)
+      ) {
+        let difference;
+        let newExpense = 0;
+        const expenseType = doc.data()?.type;
+        if (expenseType === "Daily") {
+          difference = dayjs(range?.end, "DD MMM YYYY").diff(
+            dayjs(range?.start, "DD MMM YYYY"),
+            "days"
+          );
+        } else if (expenseType === "Weekly") {
+          difference = dayjs(range?.end, "DD MMM YYYY").diff(
+            dayjs(range?.start, "DD MMM YYYY"),
+            "weeks"
+          );
+        } else if (expenseType === "Monthly") {
+          difference = dayjs(range?.end, "DD MMM YYYY").diff(
+            dayjs(range?.start, "DD MMM YYYY"),
+            "months"
+          );
+        } else if (expenseType === "One off") {
+          difference = 0;
+        }
+        if (difference === 0) {
+          newExpense = doc.data()?.amount;
+        } else if (difference > 0) {
+          newExpense = difference * doc?.data()?.amount;
+        }
+        expense += newExpense;
+      }
+    });
+  }
+  return expense;
 };
 
 const getExpensesByDateRangeWithByCategories = async (range) => {
@@ -142,6 +190,7 @@ const expensesApi = {
   getExpensesByDate,
   getExpensesByDateRange,
   getExpensesByDateRangeWithByCategories,
+  getExpensesByOfferId,
 };
 
 export default expensesApi;

@@ -1,9 +1,12 @@
+import dayjs from "dayjs";
 import { db } from "../config/firebase";
 import {
   collection,
   deleteDoc,
   doc,
   getDocs,
+  limit,
+  orderBy,
   query,
   setDoc,
   where,
@@ -81,14 +84,41 @@ const getOfferCOG = async (offer_id) => {
 };
 const getOfferCOGWithType = async (offer_id) => {
   // console.log("offer_id",offer_id);
+  let data;
   const ref = collection(db, "offers-cog");
-  const q = query(ref, where("offer_id", "==", offer_id));
+  const q = query(
+    ref,
+    where("offer_id", "==", offer_id),
+    where("startDate", "<=", new Date()),
+    orderBy("startDate", "desc"),
+    limit(1)
+  );
   const res = await getDocs(q);
+  if (res.docs?.length <= 0) {
+    const q1 = query(ref, where("offer_id", "==", offer_id));
+    const res1 = await getDocs(q1);
+    if (res1?.docs?.length > 0) {
+      data = {
+        cog: res1.docs[0]?.data()?.cog,
+        cogType: res1.docs[0]?.data()?.cogType,
+      };
+    }
+  } else if (res.docs?.length > 0) {
+    data = {
+      cog: res.docs[0]?.data()?.cog,
+      cogType: res.docs[0]?.data()?.cogType,
+    };
+  } else {
+    data = { cog: 0 };
+  }
   // let cog = 0;
   // res.docs.forEach((doc) => {
   //   if (doc.data()?.cog) cog += doc.data()?.cog;
   // });
-  return res.docs[0]?.data() ? { ...res.docs[0]?.data() } : { cog: 0 };
+  // return res.docs[0]?.data()
+  //   ? { cog: res.docs[0]?.data()?.cog, cogType: res.docs[0]?.data()?.cogType }
+  //   : { cog: 0 };
+  return data;
 };
 
 const getOfferCOGByTitle = async (title) => {
@@ -511,7 +541,82 @@ const getOfferCogsByOfferIds = async (offerIds) => {
       });
     }
   });
-  return offersCogs
+  return offersCogs;
+};
+
+const updateCOG = async (productId, newCOG, startDate = null) => {
+  console.log("data in api", { productId, newCOG, startDate });
+  let prevCog;
+  const prevRef = collection(db, "offers-cog");
+  const q = query(
+    prevRef,
+    where("offer_id", "==", productId),
+    orderBy("startDate", "desc"),
+    limit(1)
+  );
+  const prevRes = await getDocs(q);
+  if (prevRes.docs.length > 0) {
+    prevCog = { ...prevRes.docs[0].data(), id: prevRes.docs[0].id };
+  } else {
+    const prevRef = collection(db, "offers-cog");
+    const q = query(prevRef, where("offer_id", "==", productId), limit(1));
+    const prevRes = await getDocs(q);
+    if (prevRes.docs.length > 0) {
+      prevCog = { ...prevRes.docs[0].data(), id: prevRes.docs[0].id };
+    }
+  }
+  console.log("prevCog", prevCog);
+  // Check if a start date is provided
+  if (startDate) {
+    if (prevCog) {
+      const updateRef = doc(db, "offers-cog", prevCog.id);
+      await setDoc(
+        updateRef,
+        {
+          endDate: dayjs(startDate).subtract(1, "day").toDate(),
+          cogType: "By period batch",
+        },
+        { merge: true }
+      );
+    }
+
+    // If a start date is provided, update COG with history
+    const ref = doc(db, "offers-cog", uuidv4());
+    await setDoc(
+      ref,
+      {
+        offer_id: productId,
+        cog: newCOG,
+        cogType: "By period batch",
+        startDate: startDate,
+      },
+      { merge: true }
+    );
+  } else {
+    if (prevCog) {
+      const updateRef = doc(db, "offers-cog", prevCog?.id);
+      await setDoc(
+        updateRef,
+        {
+          endDate: dayjs().subtract(1, "day").toDate(),
+          cogType: "by period batch",
+        },
+        { merge: true }
+      );
+    }
+
+    const ref = doc(db, "offers-cog", uuidv4());
+    await setDoc(
+      ref,
+      {
+        offer_id: productId,
+        cog: newCOG,
+        cogType: "by period batch",
+        startDate: dayjs().toDate(),
+      },
+      { merge: true }
+    );
+  }
 };
 
 const offersApi = {
@@ -531,6 +636,7 @@ const offersApi = {
   getOfferCOGsByOfferIds,
   changeCogType,
   getOfferCOGByOfferId,
+  updateCOG,
 };
 
 export default offersApi;

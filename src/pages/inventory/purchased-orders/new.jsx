@@ -4,6 +4,7 @@ import StatusIcon from "@/components/Inventory/Tabs/PurchasedOrders/StatusIcon";
 import Loader from "@/components/utils/Loader";
 import { useAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/layout";
+import offersApi from "@/lib/offers";
 import purchasedOrdersApi from "@/lib/purchasedOrders";
 import suppliersApi from "@/lib/suppliers";
 import userApi from "@/lib/user";
@@ -48,7 +49,7 @@ const NewPurchasedOrders = () => {
         setBasicData({});
         message.success("Purchase order saved!");
         queryClient.invalidateQueries(["purchase_orders"]);
-        setSaveModal(false)
+        setSaveModal(false);
       },
     }
   );
@@ -107,6 +108,7 @@ const NewPurchasedOrders = () => {
     },
     {
       enabled: !!user,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -116,7 +118,9 @@ const NewPurchasedOrders = () => {
   };
 
   const handleSave = (saveSettings) => {
-    console.log("save settings", saveSettings)
+    console.log("save settings", saveSettings);
+    console.log("productsData", productsData);
+
     if (
       productsData?.length <= 0 ||
       Object.values(basicData).some((value) => value === null || value === "")
@@ -136,7 +140,25 @@ const NewPurchasedOrders = () => {
         ...saveSettings
       };
       console.log("data to save", data);
-      // saveMutation.mutate(data);
+      saveMutation.mutate(data);
+      if (saveSettings?.newCOG) {
+        if (productsData?.length > 0) {
+          productsData?.map(async (e) => {
+            if (saveSettings?.newBatchStartDate) {
+              await offersApi.updateCOG(
+                e?.product?.offer_id,
+                e?.totalCostPerUnit,
+                saveSettings?.newBatchStartDate
+              );
+            } else {
+              await offersApi.updateCOG(
+                e?.product?.offer_id,
+                e?.totalCostPerUnit
+              );
+            }
+          });
+        }
+      }
     }
   };
 
