@@ -23,7 +23,7 @@ import OfferModal from "./OfferModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import offersApi from "@/lib/offers";
-import COGBatchModal from "./COGBatchModal";
+// import COGBatchModal from "./COGBatchModal";
 
 const EditableContext = React.createContext(null);
 const EditableRow = ({ index, ...props }) => {
@@ -872,7 +872,7 @@ const RecordsTable = ({
           setData={setProductData}
         />
       )}
-      {cogModal && (
+      {/* {cogModal && (
         <COGBatchModal
           show={cogModal}
           close={() => {
@@ -882,7 +882,7 @@ const RecordsTable = ({
           data={productData}
           setData={setProductData}
         />
-      )}
+      )} */}
     </div>
   );
 };
