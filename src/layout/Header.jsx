@@ -135,14 +135,14 @@ const DashboardHeader = ({
               className="cursor-pointer"
             />
             <div className="w-2 h-2 absolute top-2 right-1 rounded-full bg-red-600"></div>
-            {notificationsDropdown && (
+            {/* {notificationsDropdown && (
               <div className="absolute top-10 right-2 p-3 bg-white shadow-sm flex flex-col z-[999] w-80 h-96 space-y-4 rounded-md overflow-y-auto">
                 <span className="text-lg font-bold">Notifications</span>
-                {data?.map((e) => {
+                {[]?.map((e) => {
                   return <NotificationBox data={e} />;
                 })}
               </div>
-            )}
+            )} */}
           </div>
         )}
 
