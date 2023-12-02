@@ -33,7 +33,7 @@ export default function getDateRangeFormatted(
       .subtract(5, "months")
       .startOf("month")
       .format("YYYY-MM-DD");
-    endDate = dayjs().endOf("month").format("YYYY-MM-DD");
+    endDate = dayjs().subtract(1, "month").endOf("month").format("YYYY-MM-DD");
   } else {
     startDate = dayjs(bodyStartDate).format("YYYY-MM-DD");
     endDate = dayjs(bodyEndDate).format("YYYY-MM-DD");

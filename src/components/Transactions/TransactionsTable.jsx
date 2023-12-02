@@ -205,7 +205,9 @@ const TransactionsTable = ({
                   <span className="text-sm font-medium text-gray-300">
                     Total Disbursment
                   </span>
-                  <span className="text-lg font-semibold">R {disbursment}</span>
+                  <span className="text-lg font-semibold">
+                    R {Number(disbursment).toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
