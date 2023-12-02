@@ -23,30 +23,30 @@ const DashboardHeader = ({
 }) => {
   const { user } = useAuth();
   const router = useRouter();
-  const [notificationsDropdown, setNotificationsDropdown] = useState(false);
+  // const [notificationsDropdown, setNotificationsDropdown] = useState(false);
   // const { data, isLoading } = useQuery(["notifications"], async () => {
   //   const res = await axios.get("/api/notifications");
   //   console.log("nots", res.data);
   //   return res.data;
   // });
-  const notificationRef = useRef();
+  // const notificationRef = useRef();
 
-  const handleOutsideClick = (e) => {
-    if (
-      notificationRef.current &&
-      !notificationRef.current.contains(e.target)
-    ) {
-      setNotificationsDropdown(false);
-    }
-  };
+  // const handleOutsideClick = (e) => {
+  //   if (
+  //     notificationRef.current &&
+  //     !notificationRef.current.contains(e.target)
+  //   ) {
+  //     setNotificationsDropdown(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    document.addEventListener("click", handleOutsideClick);
+  // useEffect(() => {
+  //   document.addEventListener("click", handleOutsideClick);
 
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("click", handleOutsideClick);
+  //   };
+  // }, []);
   
   return (
     <Header className="flex items-center justify-between w-full px-4 bg-[#353535]">
