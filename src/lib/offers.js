@@ -36,8 +36,13 @@ const addOfferCOG = async (data) => {
 };
 
 const changeCogType = async (offer_id, cogType) => {
+  console.log("data...", { offer_id, cogType });
   const cogRef = collection(db, "offers-cog");
-  const q = query(cogRef, where("offer_id", "==", offer_id));
+  const q = query(
+    cogRef,
+    where("offer_id", "==", offer_id),
+    where("cogType", "==", "Constant")
+  );
   const res = await getDocs(q);
   if (res?.docs.length > 0) {
     // let cog = 0;
@@ -51,17 +56,14 @@ const changeCogType = async (offer_id, cogType) => {
     await setDoc(ref, { cogType }, { merge: true });
   } else {
     const ref = doc(db, "offers-cog", uuidv4());
-    await setDoc(ref, { cogType }, { merge: true });
+    await setDoc(ref, { cogType, cog: 0, offer_id }, { merge: true });
   }
-  return offer_id;
+  return { offer_id, cogType };
 };
 
 const getAllOffersCOG = async () => {
   const ref = collection(db, "offers-cog");
-  const q = query(
-    ref,
-    where("cogType", "in", ["By period batch", "by period batch"])
-  );
+  const q = query(ref, where("cogType", "==", "By period batch"));
   const res = await getDocs(q);
   const data = res.docs.map((e) => {
     return {
@@ -96,23 +98,37 @@ const getOfferCOGWithType = async (offer_id) => {
     orderBy("startDate", "desc"),
     limit(1)
   );
+  const q1 = query(
+    ref,
+    where("offer_id", "==", offer_id),
+    where("cogType", "==", "Constant"),
+    limit(1)
+  );
   const res = await getDocs(q);
-  if (res.docs?.length <= 0) {
-    const q1 = query(ref, where("offer_id", "==", offer_id));
-    const res1 = await getDocs(q1);
-    if (res1?.docs?.length > 0) {
-      data = {
-        cog: res1.docs[0]?.data()?.cog,
-        cogType: res1.docs[0]?.data()?.cogType,
-      };
-    }
-  } else if (res.docs?.length > 0) {
+  const res1 = await getDocs(q1);
+  if (res1.docs.length > 0) {
     data = {
-      cog: res.docs[0]?.data()?.cog,
-      cogType: res.docs[0]?.data()?.cogType,
+      cog: res1.docs[0]?.data()?.cog,
+      cogType: res1.docs[0]?.data()?.cogType,
     };
   } else {
-    data = { cog: 0 };
+    if (res.docs?.length <= 0) {
+      const q1 = query(ref, where("offer_id", "==", offer_id));
+      const res1 = await getDocs(q1);
+      if (res1?.docs?.length > 0) {
+        data = {
+          cog: res1.docs[0]?.data()?.cog,
+          cogType: res1.docs[0]?.data()?.cogType,
+        };
+      }
+    } else if (res.docs?.length > 0) {
+      data = {
+        cog: res.docs[0]?.data()?.cog,
+        cogType: res.docs[0]?.data()?.cogType,
+      };
+    } else {
+      data = { cog: 0 };
+    }
   }
   // let cog = 0;
   // res.docs.forEach((doc) => {

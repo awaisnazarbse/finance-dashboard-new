@@ -23,6 +23,7 @@ import OfferModal from "./OfferModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import offersApi from "@/lib/offers";
+import COGBatchModal from "./COGBatchModal";
 
 const EditableContext = React.createContext(null);
 const EditableRow = ({ index, ...props }) => {
@@ -141,6 +142,7 @@ const RecordsTable = ({
   const [excelData, setExcelData] = useState([]);
   const [productModal, setProductModal] = useState(false);
   const [offerModal, setOfferModal] = useState(false);
+  const [cogModal, setCogModal] = useState(false);
   const [productData, setProductData] = useState(false);
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
@@ -151,8 +153,19 @@ const RecordsTable = ({
       return await offersApi.changeCogType(data?.offer_id, data?.cogType);
     },
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["offers"]);
+      onSuccess: (data) => {
+        // queryClient.invalidateQueries(["offers"]);
+        queryClient.setQueryData(["offers"], (existingData) => {
+          if (existingData) {
+            const updatedData = existingData?.offers?.map((offer) => {
+              if (offer?.offer_id === data?.offer_id) {
+                return { ...offer, cogType: data?.cogType };
+              }
+              return offer;
+            });
+            return { ...existingData, offers: updatedData };
+          }
+        });
       },
     }
   );
@@ -162,9 +175,9 @@ const RecordsTable = ({
   };
 
   const handleChangeCogType = (offer_id, cogType) => {
-    if (cogType === "By period batch" || cogType === "by period batch") {
+    // if (cogType === "By period batch" || cogType === "by period batch") {
       updateCogTypeMutation.mutate({ offer_id, cogType });
-    }
+    // }
   };
 
   const exportData = () => {
@@ -473,7 +486,18 @@ const RecordsTable = ({
       dataIndex: "cog",
       render: (_, record) => (
         <div className="w-full flex items-center">
-          <span className="text-[11px] text-black">
+          <span
+            className="text-[11px] text-black"
+            onClick={() => {
+              if (
+                record?.cogType === "by period batch" ||
+                record?.cogType === "By period batch"
+              ) {
+                setCogModal(true);
+                setProductData(record)
+              }
+            }}
+          >
             {record?.cog ? `R ${record?.cog}` : "-"}
           </span>
         </div>
@@ -844,6 +868,17 @@ const RecordsTable = ({
             setOfferModal(false);
           }}
           offers={offersCogs}
+          data={productData}
+          setData={setProductData}
+        />
+      )}
+      {cogModal && (
+        <COGBatchModal
+          show={cogModal}
+          close={() => {
+            setCogModal(false);
+          }}
+          // offers={offersCogs}
           data={productData}
           setData={setProductData}
         />
