@@ -649,12 +649,12 @@ const RecordsTable = ({
         };
 
         if (selectedColumns?.includes("Sales")) {
-          data["Sales (R)"] = !cancelOrderStatus.includes(d?.sale_status)
+          data["Sales (R)"] = !d?.sale_status?.includes("Cancelled")
             ? d?.selling_price
             : "-";
         }
         if (selectedColumns?.includes("Unit sold")) {
-          data["Unit sold"] = !cancelOrderStatus.includes(d?.sale_status)
+          data["Unit sold"] = !d?.sale_status?.includes("Cancelled")
             ? d?.quantity
             : "-";
         }

@@ -135,11 +135,7 @@ export default async function handler(req, res) {
 
           sales?.forEach((e) => {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               previousTotalRevenue += e?.selling_price;
               previousUnitSold += e?.quantity;
@@ -202,11 +198,7 @@ export default async function handler(req, res) {
 
           sales?.forEach((e) => {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               previousTotalRevenue += e?.selling_price;
               previousUnitSold += e?.quantity;
@@ -345,11 +337,7 @@ export default async function handler(req, res) {
 
         sales?.forEach((e) => {
           if (
-            e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+            !e?.sale_status?.includes("Cancelled")
           ) {
             previousTotalRevenue += e?.selling_price;
             previousUnitSold += e?.quantity;
@@ -452,11 +440,7 @@ export default async function handler(req, res) {
 
         sales?.forEach((e) => {
           if (
-            e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+            !e?.sale_status?.includes("Cancelled")
           ) {
             previousTotalRevenue += e?.selling_price;
             previousUnitSold += e?.quantity;

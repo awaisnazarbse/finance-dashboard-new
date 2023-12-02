@@ -118,11 +118,7 @@ export default async function handler(req, res) {
           }
           sales?.forEach((e) => {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               totalRevenue += e?.selling_price;
               unitSold += e?.quantity;
@@ -134,11 +130,7 @@ export default async function handler(req, res) {
             }
             if (e?.dc === "JHB") {
               if (
-                e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot" &&
-                e?.sale_status !== "Cancelled by Seller" &&
-                e?.sale_status !== "Cancelled - Late Delivery" &&
-                e?.sale_status !== "Cancelled - Inbound Exception"
+                !e?.sale_status?.includes("Cancelled")
               ) {
                 jhbRevenue += e?.selling_price;
                 jhbUnitSold += e?.quantity;
@@ -152,11 +144,7 @@ export default async function handler(req, res) {
 
             if (e?.dc === "CPT") {
               if (
-                e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot" &&
-                e?.sale_status !== "Cancelled by Seller" &&
-                e?.sale_status !== "Cancelled - Late Delivery" &&
-                e?.sale_status !== "Cancelled - Inbound Exception"
+                !e?.sale_status?.includes("Cancelled")
               ) {
                 cptRevenue += e?.selling_price;
                 cptUnitSold += e?.quantity;
@@ -215,11 +203,7 @@ export default async function handler(req, res) {
 
           sales?.forEach((e) => {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               totalRevenue += e?.selling_price;
               unitSold += e?.quantity;
@@ -231,11 +215,7 @@ export default async function handler(req, res) {
             }
             if (e?.dc === "JHB") {
               if (
-                e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot" &&
-                e?.sale_status !== "Cancelled by Seller" &&
-                e?.sale_status !== "Cancelled - Late Delivery" &&
-                e?.sale_status !== "Cancelled - Inbound Exception"
+                !e?.sale_status?.includes("Cancelled")
               ) {
                 jhbRevenue += e?.selling_price;
                 jhbUnitSold += e?.quantity;
@@ -249,11 +229,7 @@ export default async function handler(req, res) {
 
             if (e?.dc === "CPT") {
               if (
-                e?.sale_status !== "Cancelled by Customer" &&
-                e?.sale_status !== "Cancelled by Takealot" &&
-                e?.sale_status !== "Cancelled by Seller" &&
-                e?.sale_status !== "Cancelled - Late Delivery" &&
-                e?.sale_status !== "Cancelled - Inbound Exception"
+                !e?.sale_status?.includes("Cancelled")
               ) {
                 cptRevenue += e?.selling_price;
                 cptUnitSold += e?.quantity;
@@ -416,11 +392,7 @@ export default async function handler(req, res) {
             cogs += newCog;
           }
           if (
-            e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+            !e?.sale_status?.includes("Cancelled")
           ) {
             // console.log("totalRevenue", totalRevenue);
             totalRevenue += e?.selling_price;
@@ -434,11 +406,7 @@ export default async function handler(req, res) {
           }
           if (e?.dc === "JHB") {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               jhbRevenue += e?.selling_price;
               jhbUnitSold += e?.quantity;
@@ -454,11 +422,7 @@ export default async function handler(req, res) {
 
           if (e?.dc === "CPT") {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               cptRevenue += e?.selling_price;
               cptUnitSold += e?.quantity;
@@ -595,11 +559,7 @@ export default async function handler(req, res) {
 
         sales?.forEach((e) => {
           if (
-            e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+            !e?.sale_status?.includes("Cancelled")
           ) {
             totalRevenue += e?.selling_price;
             unitSold += e?.quantity;
@@ -611,11 +571,7 @@ export default async function handler(req, res) {
           }
           if (e?.dc === "JHB") {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               jhbRevenue += e?.selling_price;
               jhbUnitSold += e?.quantity;
@@ -629,11 +585,7 @@ export default async function handler(req, res) {
 
           if (e?.dc === "CPT") {
             if (
-              e?.sale_status !== "Cancelled by Customer" &&
-              e?.sale_status !== "Cancelled by Takealot" &&
-              e?.sale_status !== "Cancelled by Seller" &&
-              e?.sale_status !== "Cancelled - Late Delivery" &&
-              e?.sale_status !== "Cancelled - Inbound Exception"
+              !e?.sale_status?.includes("Cancelled")
             ) {
               cptRevenue += e?.selling_price;
               cptUnitSold += e?.quantity;

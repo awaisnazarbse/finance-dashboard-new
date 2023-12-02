@@ -58,7 +58,10 @@ const changeCogType = async (offer_id, cogType) => {
 
 const getAllOffersCOG = async () => {
   const ref = collection(db, "offers-cog");
-  const q = query(ref, where("cogType", "==", "By period batch"));
+  const q = query(
+    ref,
+    where("cogType", "in", ["By period batch", "by period batch"])
+  );
   const res = await getDocs(q);
   const data = res.docs.map((e) => {
     return {

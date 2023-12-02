@@ -203,11 +203,7 @@ export default async function handler(req, res) {
             cogs += newCog;
           }
           if (
-            sale?.sale_status !== "Cancelled by Customer" &&
-            sale?.sale_status !== "Cancelled by Takealot" &&
-            sale?.sale_status !== "Cancelled by Seller" &&
-            sale?.sale_status !== "Cancelled - Late Delivery" &&
-            sale?.sale_status !== "Cancelled - Inbound Exception"
+            !sale?.sale_status?.includes("Cancelled")
           ) {
             sales += sale?.selling_price;
             units += sale?.quantity;
@@ -353,11 +349,7 @@ export default async function handler(req, res) {
       Promise.all(
         data?.map((sale) => {
           if (
-            sale?.sale_status !== "Cancelled by Customer" &&
-            sale?.sale_status !== "Cancelled by Takealot" &&
-            sale?.sale_status !== "Cancelled by Seller" &&
-            sale?.sale_status !== "Cancelled - Late Delivery" &&
-            sale?.sale_status !== "Cancelled - Inbound Exception"
+            !sale?.sale_status?.includes("Cancelled")
           ) {
             sales += sale?.selling_price;
             units += sale?.quantity;

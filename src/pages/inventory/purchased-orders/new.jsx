@@ -143,20 +143,23 @@ const NewPurchasedOrders = () => {
           productsData?.map(async (e) => {
             let newCog = null;
             if (saveSettings?.previousBatchReminder) {
-              productsData?.forEach((e) => {
-                let totalStockInHand = 0;
-                e?.product?.leadtime_stock?.forEach((e) => {
-                  totalStockInHand += e?.quantity_available;
-                });
-                let prevStock =
-                  totalStockInHand + e?.product?.stock_at_takealot_total;
-                let newStock = productsData?.unitsOrdered;
-                let prevStockValue = prevStock * e?.product?.selling_price;
-                let newStockValue = newStock * e?.product?.selling_price;
-                let totalStock = prevStock + newStock;
-                let totalStockValue = prevStockValue + newStockValue;
-                newCog = totalStockValue / totalStock;
+              // productsData?.forEach((e) => {
+              let totalStockInHand = 0;
+              e?.product?.leadtime_stock?.forEach((stock) => {
+                totalStockInHand += stock?.quantity_available;
               });
+              const prevCog = await offersApi.getOfferCOGWithType(
+                e?.product?.offer_id
+              );
+              let prevStock =
+                totalStockInHand + e?.product?.stock_at_takealot_total;
+              let newStock = e?.unitsOrdered;
+              let prevStockValue = prevStock * prevCog.cog;
+              let newStockValue = newStock * e?.totalCostPerUnit;
+              let totalStock = prevStock + newStock;
+              let totalStockValue = prevStockValue + newStockValue;
+              newCog = totalStockValue / totalStock;
+              // });
             }
             if (saveSettings?.newBatchStartDate) {
               await offersApi.updateCOG(

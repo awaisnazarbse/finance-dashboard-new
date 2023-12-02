@@ -397,6 +397,22 @@ const ProductsTable = ({
     {
       title: (
         <div className="flex items-center space-x-4">
+          <span className="text-[10px] font-light text-[#777777]">Weight</span>
+        </div>
+      ),
+      dataIndex: "weight",
+      render: (_, record) => (
+        <div className="w-full flex items-center py-3">
+          <span className="text-[10px] font-light text-black line-clamp-1">
+            {record?.weight || "-"}
+          </span>
+        </div>
+      ),
+      editable: true,
+    },
+    {
+      title: (
+        <div className="flex items-center space-x-4">
           <span className="text-[10px] font-light text-[#777777]">CBM</span>
         </div>
       ),
@@ -410,6 +426,7 @@ const ProductsTable = ({
       ),
       // editable: true,
     },
+
     {
       title: (
         <div className="flex items-center space-x-4">

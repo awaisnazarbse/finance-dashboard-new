@@ -46,6 +46,7 @@ const NewPurchaseOrderTabs = ({
         height: 0,
       },
       totalManufacturingCost: 0,
+      weight: 0,
       manufacturingCostPerUnit: 0,
       transportationCostPerUnit: 0,
       totalCostPerUnit: 0,
