@@ -1,6 +1,8 @@
 import expensesApi from "@/lib/expense";
 import offersApi from "@/lib/offers";
 import dayjs from "dayjs";
+var weekOfYear = require("dayjs/plugin/weekOfYear");
+dayjs.extend(weekOfYear);
 
 async function groupSalesByMonths(salesArray, transactions) {
   // const groupedSales = {};
