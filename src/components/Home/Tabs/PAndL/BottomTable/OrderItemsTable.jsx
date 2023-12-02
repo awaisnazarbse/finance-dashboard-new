@@ -29,7 +29,7 @@ const OrderItemsTable = ({
     async () => {
       const res = await axios.post(
         // `http://localhost:3000/sales`,
-        `https://finance-dashboard-server-smoky.vercel.app/sales`,
+        `https://financeserver-production-2c40.up.railway.app/sales`,
         {
           apiKey: user?.apiKey,
           startDate: bottomTableDates[0],

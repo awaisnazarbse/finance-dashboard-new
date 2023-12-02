@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const data = req.body;
   try {
     const res = await axios.post(
-      `https://finance-dashboard-server-smoky.vercel.app/sales/products_sales`,
+      `https://financeserver-production-2c40.up.railway.app/sales/products_sales`,
       {
         apiKey: data?.apiKey,
         startDate: data?.startDate,

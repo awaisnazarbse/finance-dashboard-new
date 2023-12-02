@@ -32,7 +32,7 @@ const OrderItemsTable = ({
         res = await axios.post(
           // `http://localhost:3000/sales`,
           `https://financeserver-production-2c40.up.railway.app/sales`,
-          // `https://finance-dashboard-server-smoky.vercel.app/sales`,
+          // `https://financeserver-production-2c40.up.railway.app/sales`,
           {
             apiKey: user?.apiKey,
             startDate: startDate,
@@ -47,7 +47,7 @@ const OrderItemsTable = ({
         res = await axios.post(
           // `http://localhost:3000/sales`,
           `https://financeserver-production-2c40.up.railway.app/sales`,
-          // `https://finance-dashboard-server-smoky.vercel.app/sales`,
+          // `https://financeserver-production-2c40.up.railway.app/sales`,
           {
             apiKey: user?.apiKey,
             startDate: startDate,

@@ -36,7 +36,7 @@ const Tabs = ({
     async () => {
       const res = await axios.post(
         // `http://localhost:3000/sales/trend_test`,
-        "https://finance-dashboard-server-smoky.vercel.app/sales/trend_test",
+        "https://financeserver-production-2c40.up.railway.app/sales/trend_test",
         {
           apiKey: user?.apiKey,
           type: active,
