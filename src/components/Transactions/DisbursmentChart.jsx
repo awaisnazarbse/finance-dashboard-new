@@ -117,7 +117,22 @@ const DisbursmentChart = ({ overviewData, graphLabels }) => {
     <Line
       options={options}
       data={{
-        datasets: [{ label: "Disbursment", data: overviewData }],
+        datasets: [
+          {
+            label: "Disbursment",
+            data: overviewData?.map((e) => -e),
+            borderColor: "#1569BD",
+            borderWidth: 2,
+            dot: "#1569BD",
+            pointBackgroundColor: "#1569BD",
+            pointHoverBackgroundColor: "#ffffff",
+            pointHoverBorderColor: "#1569BD",
+            pointHoverBorderWidth: 2,
+            pointHoverBorderWidth: 4,
+            pointRadius: 3,
+            lineTension: 0.6,
+          },
+        ],
         labels: graphLabels,
       }}
     />

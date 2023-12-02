@@ -85,7 +85,8 @@ const EditableCell = ({
     childNode =
       editable &&
       dataIndex === "cog" &&
-      record?.cogType === "By period batch" ? (
+      (record?.cogType === "By period batch" ||
+        record?.cogType === "by period batch") ? (
         <div
           className="editable-cell-value-wrap flex items-center justify-center min-h-[2.5rem] cursor-text text-right"
           style={{
@@ -161,7 +162,7 @@ const RecordsTable = ({
   };
 
   const handleChangeCogType = (offer_id, cogType) => {
-    if (cogType === "By period batch") {
+    if (cogType === "By period batch" || cogType === "by period batch") {
       updateCogTypeMutation.mutate({ offer_id, cogType });
     }
   };

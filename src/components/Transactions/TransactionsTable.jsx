@@ -188,8 +188,10 @@ const TransactionsTable = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <DisbursmentChart
-                overviewData={graphData ? Object.values(graphData) : []}
-                graphLabels={graphData ? Object.keys(graphData) : []}
+                overviewData={
+                  graphData ? Object.values(graphData).reverse() : []
+                }
+                graphLabels={graphData ? Object.keys(graphData).reverse() : []}
               />
             </div>
             <div className="p-5">

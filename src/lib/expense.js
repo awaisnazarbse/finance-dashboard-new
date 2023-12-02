@@ -68,9 +68,36 @@ const getExpensesByDateRange = async (range) => {
       new Date(doc.data().date) <= new Date(range?.end) &&
       new Date(doc.data().endDate) >= new Date(range?.start)
     ) {
+      let difference;
+      let newExpense = 0;
+      const expenseType = doc.data()?.type;
+      if (expenseType === "Daily") {
+        difference = dayjs(range?.end, "DD MMM YYYY").diff(
+          dayjs(range?.start, "DD MMM YYYY"),
+          "days"
+        );
+      } else if (expenseType === "Weekly") {
+        difference = dayjs(range?.end, "DD MMM YYYY").diff(
+          dayjs(range?.start, "DD MMM YYYY"),
+          "weeks"
+        );
+      } else if (expenseType === "Monthly") {
+        difference = dayjs(range?.end, "DD MMM YYYY").diff(
+          dayjs(range?.start, "DD MMM YYYY"),
+          "months"
+        );
+      } else if (expenseType === "One off") {
+        difference = 0;
+      }
+      if (difference === 0) {
+        newExpense = doc.data()?.amount;
+      } else if (difference > 0) {
+        newExpense = difference * doc?.data()?.amount;
+      }
       docs.push({
         ...doc.data(),
         id: doc.id,
+        amount: newExpense
       });
     }
   });
@@ -134,9 +161,36 @@ const getExpensesByDateRangeWithByCategories = async (range) => {
       new Date(doc.data().date) <= new Date(range?.end) &&
       new Date(doc.data().endDate) >= new Date(range?.start)
     ) {
+      let difference;
+      let newExpense = 0;
+      const expenseType = doc.data()?.type;
+      if (expenseType === "Daily") {
+        difference = dayjs(range?.end, "DD MMM YYYY").diff(
+          dayjs(range?.start, "DD MMM YYYY"),
+          "days"
+        );
+      } else if (expenseType === "Weekly") {
+        difference = dayjs(range?.end, "DD MMM YYYY").diff(
+          dayjs(range?.start, "DD MMM YYYY"),
+          "weeks"
+        );
+      } else if (expenseType === "Monthly") {
+        difference = dayjs(range?.end, "DD MMM YYYY").diff(
+          dayjs(range?.start, "DD MMM YYYY"),
+          "months"
+        );
+      } else if (expenseType === "One off") {
+        difference = 0;
+      }
+      if (difference === 0) {
+        newExpense = doc.data()?.amount;
+      } else if (difference > 0) {
+        newExpense = difference * doc?.data()?.amount;
+      }
       docs.push({
         ...doc.data(),
         id: doc.id,
+        totalExpense: newExpense,
       });
     }
   });

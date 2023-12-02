@@ -46,7 +46,8 @@ const ProductsTable = ({
         const userApiKeys = await userApi?.getActiveUserAPIKeys(user?.uid);
         response = await axios.post(
           // "http://localhost:3000/sales/products_sales",
-          "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
+          "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
+          // "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
           {
             apiKey: user?.apiKey,
             startDate: startDate,
@@ -61,7 +62,8 @@ const ProductsTable = ({
         console.log("product sales else running");
         response = await axios.post(
           // "http://localhost:3000/sales/products_sales",
-          "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
+          "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
+          // "https://finance-dashboard-server-smoky.vercel.app/sales/products_sales",
           {
             apiKey: user?.apiKey,
             startDate: startDate,

@@ -121,10 +121,7 @@ const NewPurchasedOrders = () => {
     console.log("save settings", saveSettings);
     console.log("productsData", productsData);
 
-    if (
-      productsData?.length <= 0 ||
-      Object.values(basicData).some((value) => value === null || value === "")
-    ) {
+    if (productsData?.length <= 0 || basicData.date === null) {
       message.error("Please provide details!");
     } else {
       const data = {
@@ -137,23 +134,40 @@ const NewPurchasedOrders = () => {
         user: user?.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        ...saveSettings
+        ...saveSettings,
       };
       console.log("data to save", data);
       saveMutation.mutate(data);
       if (saveSettings?.newCOG) {
         if (productsData?.length > 0) {
           productsData?.map(async (e) => {
+            let newCog = null;
+            if (saveSettings?.previousBatchReminder) {
+              productsData?.forEach((e) => {
+                let totalStockInHand = 0;
+                e?.product?.leadtime_stock?.forEach((e) => {
+                  totalStockInHand += e?.quantity_available;
+                });
+                let prevStock =
+                  totalStockInHand + e?.product?.stock_at_takealot_total;
+                let newStock = productsData?.unitsOrdered;
+                let prevStockValue = prevStock * e?.product?.selling_price;
+                let newStockValue = newStock * e?.product?.selling_price;
+                let totalStock = prevStock + newStock;
+                let totalStockValue = prevStockValue + newStockValue;
+                newCog = totalStockValue / totalStock;
+              });
+            }
             if (saveSettings?.newBatchStartDate) {
               await offersApi.updateCOG(
                 e?.product?.offer_id,
-                e?.totalCostPerUnit,
+                newCog ? newCog : e?.totalCostPerUnit,
                 saveSettings?.newBatchStartDate
               );
             } else {
               await offersApi.updateCOG(
                 e?.product?.offer_id,
-                e?.totalCostPerUnit
+                newCog ? newCog : e?.totalCostPerUnit
               );
             }
           });

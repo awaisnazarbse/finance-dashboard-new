@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
-var weekOfYear = require('dayjs/plugin/weekOfYear')
-dayjs.extend(weekOfYear)
+var weekOfYear = require("dayjs/plugin/weekOfYear");
+dayjs.extend(weekOfYear);
 
 export default function generateYearWeeks(months, duration) {
   const currentYear = dayjs().year();
@@ -17,7 +17,9 @@ export default function generateYearWeeks(months, duration) {
     weeks.push({
       start: currentWeekStart.format("YYYY-MM-DD"),
       end: currentWeekEnd.format("YYYY-MM-DD"),
-      title: `WK${weekNumber}`,
+      title: `${currentWeekStart.format("YYYY-MM-DD")}-${currentWeekEnd.format(
+        "YYYY-MM-DD"
+      )}`,
     });
 
     currentWeekStart = currentWeekEnd.add(1, "day");

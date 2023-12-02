@@ -6,6 +6,10 @@ import { useAuth } from "@/context/AuthContext";
 import { BiArrowBack } from "react-icons/bi";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import NotificationBox from "./NotificationBox";
+import { useEffect, useRef, useState } from "react";
 
 const { Header } = Layout;
 
@@ -19,6 +23,31 @@ const DashboardHeader = ({
 }) => {
   const { user } = useAuth();
   const router = useRouter();
+  const [notificationsDropdown, setNotificationsDropdown] = useState(false);
+  const { data, isLoading } = useQuery(["notifications"], async () => {
+    const res = await axios.get("/api/notifications");
+    console.log("nots", res.data);
+    return res.data;
+  });
+  const notificationRef = useRef();
+
+  const handleOutsideClick = (e) => {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(e.target)
+    ) {
+      setNotificationsDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
+  
   return (
     <Header className="flex items-center justify-between w-full px-4 bg-[#353535]">
       <div className="flex space-x-4 md:space-x-8 items-center">
@@ -97,10 +126,25 @@ const DashboardHeader = ({
           alignItems: "center",
         }}
       >
-        <div className="relative h-10">
-          <AiOutlineBell size={33} color="#7C7C7C" />
-          <div className="w-2 h-2 absolute top-2 right-1 rounded-full bg-red-600"></div>
-        </div>
+        {isLoading ? null : (
+          <div className="relative h-10" ref={notificationRef}>
+            <AiOutlineBell
+              onClick={() => setNotificationsDropdown(!notificationsDropdown)}
+              size={33}
+              color="#7C7C7C"
+              className="cursor-pointer"
+            />
+            <div className="w-2 h-2 absolute top-2 right-1 rounded-full bg-red-600"></div>
+            {notificationsDropdown && (
+              <div className="absolute top-10 right-2 p-3 bg-white shadow-sm flex flex-col z-[999] w-80 h-96 space-y-4 rounded-md overflow-y-auto">
+                <span className="text-lg font-bold">Notifications</span>
+                {data?.map((e) => {
+                  return <NotificationBox data={e} />;
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center justify-center">
           <Avatar

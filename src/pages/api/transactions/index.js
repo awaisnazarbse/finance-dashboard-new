@@ -33,8 +33,8 @@ export default async function handler(req, res) {
     });
 
     // console.log("response",response)
-    const data = await response.data
-    const disbursmentData = await disbursmentResponse.data
+    const data = await response.data;
+    const disbursmentData = await disbursmentResponse.data;
     const last3Days = {
       startDate: dayjs().subtract(3, "days").format("YYYY-MM-DD"),
       endDate: dayjs().format("YYYY-MM-DD"),
@@ -86,10 +86,16 @@ export default async function handler(req, res) {
           (groupedDisbursment[weekKey] || 0) + amount;
       }
     });
+    // -475151.84
 
     res
       .status(200)
-      .json({ data, pendingBalance, disbursment, groupedDisbursment });
+      .json({
+        data,
+        pendingBalance,
+        disbursment: -disbursment,
+        groupedDisbursment,
+      });
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({

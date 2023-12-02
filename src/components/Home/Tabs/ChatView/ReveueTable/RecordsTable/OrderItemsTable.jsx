@@ -31,7 +31,8 @@ const OrderItemsTable = ({
         const userApiKeys = await userApi?.getActiveUserAPIKeys(user?.uid);
         res = await axios.post(
           // `http://localhost:3000/sales`,
-          `https://finance-dashboard-server-smoky.vercel.app/sales`,
+          `https://financeserver-production-2c40.up.railway.app/sales`,
+          // `https://finance-dashboard-server-smoky.vercel.app/sales`,
           {
             apiKey: user?.apiKey,
             startDate: startDate,
@@ -45,7 +46,8 @@ const OrderItemsTable = ({
       } else {
         res = await axios.post(
           // `http://localhost:3000/sales`,
-          `https://finance-dashboard-server-smoky.vercel.app/sales`,
+          `https://financeserver-production-2c40.up.railway.app/sales`,
+          // `https://finance-dashboard-server-smoky.vercel.app/sales`,
           {
             apiKey: user?.apiKey,
             startDate: startDate,
