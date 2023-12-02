@@ -7,7 +7,7 @@ export default async function getAllSalesNew(
   range = true
 ) {
   const maxRetries = 5;
-  const retryDelay = 1000;
+  const retryDelay = 5000;
   const pageSize = 100;
   let allSales = [];
   let pageNumber = 1;
