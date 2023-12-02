@@ -24,11 +24,11 @@ const DashboardHeader = ({
   const { user } = useAuth();
   const router = useRouter();
   const [notificationsDropdown, setNotificationsDropdown] = useState(false);
-  const { data, isLoading } = useQuery(["notifications"], async () => {
-    const res = await axios.get("/api/notifications");
-    console.log("nots", res.data);
-    return res.data;
-  });
+  // const { data, isLoading } = useQuery(["notifications"], async () => {
+  //   const res = await axios.get("/api/notifications");
+  //   console.log("nots", res.data);
+  //   return res.data;
+  // });
   const notificationRef = useRef();
 
   const handleOutsideClick = (e) => {
