@@ -185,7 +185,7 @@ const TransactionsTable = ({
           </div>
         )}
         {loading && !graphData ? null : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_.4fr] gap-5">
             <div>
               <DisbursmentChart
                 overviewData={
@@ -194,9 +194,9 @@ const TransactionsTable = ({
                 graphLabels={graphData ? Object.keys(graphData).reverse() : []}
               />
             </div>
-            <div className="p-5">
+            <div className="p-5 flex flex-col space-y-4">
               <div
-                className="bg-white rounded-md flex items-center justify-between p-5 w-fit"
+                className="bg-white rounded-md flex items-center justify-between p-5 w-full"
                 style={{
                   boxShadow: " rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
                 }}
@@ -207,6 +207,51 @@ const TransactionsTable = ({
                   </span>
                   <span className="text-lg font-semibold">
                     R {Number(disbursment).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <div
+                className="bg-white rounded-md flex items-center justify-between p-5 w-full"
+                style={{
+                  boxShadow: " rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
+                }}
+              >
+                <div className="flex flex-col space-y-2">
+                  <span className="text-sm font-medium text-gray-300">
+                  {Object.keys(graphData)[0]}
+                  </span>
+                  <span className="text-lg font-semibold">
+                    R {-graphData[Object.keys(graphData)[0]]}
+                  </span>
+                </div>
+              </div>
+              <div
+                className="bg-white rounded-md flex items-center justify-between p-5 w-full"
+                style={{
+                  boxShadow: " rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
+                }}
+              >
+                <div className="flex flex-col space-y-2">
+                <span className="text-sm font-medium text-gray-300">
+                  {Object.keys(graphData)[1]}
+                  </span>
+                  <span className="text-lg font-semibold">
+                    R {-graphData[Object.keys(graphData)[1]]}
+                  </span>
+                </div>
+              </div>
+              <div
+                className="bg-white rounded-md flex items-center justify-between p-5 w-full"
+                style={{
+                  boxShadow: " rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
+                }}
+              >
+                <div className="flex flex-col space-y-2">
+                <span className="text-sm font-medium text-gray-300">
+                  {Object.keys(graphData)[2]}
+                  </span>
+                  <span className="text-lg font-semibold">
+                    R {-graphData[Object.keys(graphData)[2]]}
                   </span>
                 </div>
               </div>

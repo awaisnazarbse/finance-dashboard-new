@@ -29,7 +29,7 @@ const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 //   [40, 50, 60, 70, 80, 90, 100], // 6 AM
 // ];
 
-const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const byUnitRange = [
   // {
@@ -195,7 +195,7 @@ const BarChart = ({ data, by }) => {
       // },
     },
     xaxis: {
-      categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      categories: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
       // position: "top", // Display x-axis labels on top
     },
     dataLabels: {

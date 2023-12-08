@@ -15,7 +15,7 @@ const BarChartComponent = ({ duration, type }) => {
     async () => {
       const res = await axios.post(
         // "http://localhost:3000/sales/barchart",
-        "https://financeserver-production-2c40.up.railway.app/sales/barchart",
+        "https://finance-dashboard-server-smoky.vercel.app/sales/barchart",
         {
           apiKey: user?.apiKey,
           duration,

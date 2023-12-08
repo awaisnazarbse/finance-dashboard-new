@@ -5,7 +5,7 @@ import userApi from "@/lib/user";
 import offersApi from "@/lib/offers";
 import getAllSalesNew from "@/utils/getAllSalesNew";
 import getCog from "@/utils/getCog";
-import getAllTransactions from "@/utils/getAllTransactions";
+import getTransactionsByType from "@/utils/getTransactionsByType";
 
 export default async function handler(req, res) {
   const data = req.body;
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
               endDate,
               userApiKeys[i]?.apiKey
             );
-            let newTrans = await getAllTransactions(
+            let newTrans = await getTransactionsByType(
               startDate,
               endDate,
               userApiKeys[i]?.apiKey
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
           }
         } else {
           sales = await getAllSalesNew(startDate, endDate, data?.marketplace);
-          transactions = await getAllTransactions(
+          transactions = await getTransactionsByType(
             startDate,
             endDate,
             data?.marketplace

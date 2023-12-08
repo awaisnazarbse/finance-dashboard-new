@@ -14,7 +14,7 @@ export default function Transactions() {
   const [currentPage, setCurrentPage] = useState(1);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [duration, setDuration] = useState("Last 3 Months");
+  const [duration, setDuration] = useState("Last 6 Months");
   const { data, isLoading } = useQuery(
     ["transactions", currentPage, startDate, endDate, duration],
     async () => {

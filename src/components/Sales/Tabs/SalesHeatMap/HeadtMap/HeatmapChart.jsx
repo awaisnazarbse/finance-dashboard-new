@@ -96,7 +96,7 @@ const bySalesRange = [
   },
 ];
 
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const HeatmapChart = ({ data, by }) => {
   const series = [

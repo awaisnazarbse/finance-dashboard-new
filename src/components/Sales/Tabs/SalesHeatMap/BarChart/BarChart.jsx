@@ -123,7 +123,7 @@ const bySalesRange = [
   },
 ];
 
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const BarChart = ({ data, by }) => {
   // const series = [{data:
@@ -254,7 +254,6 @@ const BarChart = ({ data, by }) => {
     legend: {
       position: "left",
     },
-    
   };
 
   return (

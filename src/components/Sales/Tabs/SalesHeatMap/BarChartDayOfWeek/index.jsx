@@ -15,7 +15,7 @@ const BarChartComponentDayOfWeek = ({ duration, type }) => {
     async () => {
       const res = await axios.post(
         // "http://localhost:3000/sales/barchart_by_days",
-        "https://financeserver-production-2c40.up.railway.app/sales/barchart_by_days",
+        "https://finance-dashboard-server-smoky.vercel.app/sales/barchart_by_days",
         {
           apiKey: user?.apiKey,
           duration,

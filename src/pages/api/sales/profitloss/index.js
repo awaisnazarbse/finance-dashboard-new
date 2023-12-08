@@ -1,7 +1,7 @@
 import getAllSales from "@/utils/getAllSales";
 import getAllSalesByProduct from "@/utils/getAllSalesByProduct";
 import getAllSalesNew from "@/utils/getAllSalesNew";
-import getAllTransactions from "@/utils/getAllTransactions";
+import getTransactionsByType from "@/utils/getTransactionsByType";
 import groupSales from "@/utils/groupSalesByMonths";
 import dayjs from "dayjs";
 
@@ -33,21 +33,21 @@ export default async function handler(req, res) {
           dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
           body?.apiKey
         );
-        // let first6MonthsTransactions = await getAllTransactions(
-        //   dayjs(first6MonthsStart).format("YYYY-MM-DD"),
-        //   dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-        //   body?.apiKey
-        // );
-        // let second6MonthsTransactions = await getAllTransactions(
-        //   dayjs(second6MonthsStart).format("YYYY-MM-DD"),
-        //   dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-        //   body?.apiKey
-        // );
+        let first6MonthsTransactions = await getTransactionsByType(
+          dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+          dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+          body?.apiKey
+        );
+        let second6MonthsTransactions = await getTransactionsByType(
+          dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+          dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+          body?.apiKey
+        );
 
         rangeSales = first6MonthsSales?.concat(second6MonthsSales);
-        // transactions = first6MonthsTransactions?.concat(
-        //   second6MonthsTransactions
-        // );
+        transactions = first6MonthsTransactions?.concat(
+          second6MonthsTransactions
+        );
         console.log("ranges sales length", rangeSales?.length);
       } else {
         let first6MonthsSales = await getAllSalesByProduct(
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
           dayjs(body?.dates[1]).format("YYYY-MM-DD"),
           body?.apiKey
         );
-        transactions = await getAllTransactions(
+        transactions = await getTransactionsByType(
           dayjs(body?.dates[0]).format("YYYY-MM-DD"),
           dayjs(body?.dates[1]).format("YYYY-MM-DD"),
           body?.apiKey

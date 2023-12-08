@@ -17,7 +17,7 @@ const Inventory = () => {
   const router = useRouter();
   const { tab } = router.query;
   const [active, setActive] = useState(tab ? tab : "Planner");
-  const tabs = ["Planner", "Purchased Orders", "Shipments", "Suppliers"];
+  const tabs = ["Planner", "Purchased Orders", "Suppliers"];
   const { user } = useAuth();
 
   const { data: userApiKeys, isLoading: keysLoading } = useQuery(
@@ -52,7 +52,7 @@ const Inventory = () => {
           {active === "Purchased Orders" && (
             <PurchasedOrders userApiKeys={userApiKeys} />
           )}
-          {active === "Shipments" && <Shipments />}
+          {/* {active === "Shipments" && <Shipments />} */}
           {active === "Suppliers" && <Suppliers />}
         </main>
       </DashboardLayout>

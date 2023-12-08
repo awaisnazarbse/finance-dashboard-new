@@ -15,7 +15,7 @@ const HeatMap = ({ duration, type }) => {
     async () => {
       const res = await axios.post(
         // "http://localhost:3000/sales/heatmap",
-        "https://financeserver-production-2c40.up.railway.app/sales/heatmap",
+        "https://finance-dashboard-server-smoky.vercel.app/sales/heatmap",
         {
           apiKey: user?.apiKey,
           duration,
