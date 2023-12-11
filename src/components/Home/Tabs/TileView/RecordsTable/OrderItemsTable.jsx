@@ -30,7 +30,7 @@ const OrderItemsTable = ({
         const userApiKeys = await userApi.getActiveUserAPIKeys(user?.uid);
         res = await axios.post(
           // `http://localhost:3000/sales`,
-          `https://financeserver-production-2c40.up.railway.app/sales`,
+          `https://api.sellermetrics.co.za/sales`,
           {
             apiKey: user?.apiKey,
             startDate,
@@ -43,7 +43,7 @@ const OrderItemsTable = ({
       } else {
         res = await axios.post(
           // `http://localhost:3000/sales`,
-          `https://financeserver-production-2c40.up.railway.app/sales`,
+          `https://api.sellermetrics.co.za/sales`,
           {
             apiKey: user?.apiKey,
             startDate,

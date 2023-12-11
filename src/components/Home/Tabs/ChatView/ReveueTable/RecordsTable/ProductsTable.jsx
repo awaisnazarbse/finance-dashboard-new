@@ -46,8 +46,8 @@ const ProductsTable = ({
         const userApiKeys = await userApi?.getActiveUserAPIKeys(user?.uid);
         response = await axios.post(
           // "http://localhost:3000/sales/products_sales",
-          "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
-          // "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
+          "https://api.sellermetrics.co.za/sales/products_sales",
+          // "https://api.sellermetrics.co.za/sales/products_sales",
           {
             apiKey: user?.apiKey,
             startDate: startDate,
@@ -62,8 +62,8 @@ const ProductsTable = ({
         console.log("product sales else running");
         response = await axios.post(
           // "http://localhost:3000/sales/products_sales",
-          "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
-          // "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
+          "https://api.sellermetrics.co.za/sales/products_sales",
+          // "https://api.sellermetrics.co.za/sales/products_sales",
           {
             apiKey: user?.apiKey,
             startDate: startDate,

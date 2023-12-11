@@ -33,7 +33,7 @@ const ProductsTable = ({
     async () => {
       const res = await axios.post(
         // "http://localhost:3000/sales/products_sales",
-        "https://financeserver-production-2c40.up.railway.app/sales/products_sales",
+        "https://api.sellermetrics.co.za/sales/products_sales",
         {
           apiKey: user?.apiKey,
           startDate: bottomTableDates[0],
@@ -59,7 +59,7 @@ const ProductsTable = ({
         })
       );
       // const res = await axios.post(
-      //   `https://financeserver-production-2c40.up.railway.app/sales/products_sales`,
+      //   `https://api.sellermetrics.co.za/sales/products_sales`,
       //   {
       //     apiKey: user?.apiKey,
       //     startDate: dates[0],

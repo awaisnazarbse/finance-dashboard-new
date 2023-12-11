@@ -34,7 +34,7 @@ const ProductsTable = ({
       if (marketplace === "All market places") {
         const userApiKeys = await userApi.getActiveUserAPIKeys(user?.uid);
         res = await axios.post(
-          `https://financeserver-production-2c40.up.railway.app/sales/products_sales`,
+          `https://api.sellermetrics.co.za/sales/products_sales`,
           {
             apiKey: user?.apiKey,
             startDate,
@@ -47,7 +47,7 @@ const ProductsTable = ({
       } else {
         res = await axios.post(
           // "http://localhost:3000/sales/products_sales",
-          `https://financeserver-production-2c40.up.railway.app/sales/products_sales`,
+          `https://api.sellermetrics.co.za/sales/products_sales`,
           {
             apiKey: user?.apiKey,
             startDate,
