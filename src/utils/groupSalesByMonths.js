@@ -260,7 +260,7 @@ async function groupSalesByMonths(salesArray, transactions) {
         }
         if (parameter === "Units Sold") {
           if (
-            !e?.sale_status?.includes("Cancelled")
+            !sale?.sale_status?.includes("Cancelled")
           ) {
             groupedData[parameter][monthKey] += sale?.quantity;
           }
@@ -536,7 +536,7 @@ async function groupSalesByWeeks(salesArray) {
         if (groupedData[parameter][weekKey] !== undefined) {
           if (parameter === "Sales") {
             if (
-              !e?.sale_status?.includes("Cancelled")
+              !sale?.sale_status?.includes("Cancelled")
             ) {
               groupedData[parameter][weekKey] += sale.selling_price;
             }
@@ -767,7 +767,7 @@ async function groupSalesByLast30Days(salesArray) {
         if (groupedData[parameter][dayKey] !== undefined) {
           if (parameter === "Sales") {
             if (
-              !e?.sale_status?.includes("Cancelled")
+              !sale?.sale_status?.includes("Cancelled")
             ) {
               groupedData[parameter][dayKey] += sale.selling_price;
             }
