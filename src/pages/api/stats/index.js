@@ -122,20 +122,20 @@ export default async function handler(req, res) {
       };
       // console.log("response", response.data);
       sales?.forEach((e) => {
-        salesStats.earning = e?.selling_price + salesStats?.earning;
-        salesStats.unitSold = salesStats?.unitSold + e?.quantity;
+        if (!e?.sale_status?.includes("Cancelled")) {
+          salesStats.earning += e?.selling_price;
+          salesStats.unitSold += e?.quantity;
+        }
         salesStats.fee = salesStats?.fee + e?.total_fee;
         salesStats.successFee += e?.success_fee;
         salesStats.fulfillmentFee += e?.fulfillment_fee;
         salesStats.courierCollectionFee += e?.courier_collection_fee;
         salesStats.autoIbtFee += e?.auto_ibt_fee;
-        if (
-          e?.sale_status?.includes("Return") ||
-          e?.sale_status?.includes("Cancel")
-        ) {
+        if (e?.sale_status === "Returned") {
+          salesStats.refundCost += e?.selling_price - e?.total_fee;
           salesStats.refunded = salesStats?.refunded + e?.quantity;
-          salesStats.refundCost = e?.selling_price + salesStats?.refundCost;
         }
+
         if (e?.promotion) {
           salesStats.promo = e?.selling_price + salesStats?.promo;
         }
