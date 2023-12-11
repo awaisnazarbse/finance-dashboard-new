@@ -74,20 +74,20 @@ export default async function handler(req, res) {
               dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
               userApiKeys[it]?.apiKey
             );
-            let first6MonthsTransactions = await getTransactionsByType(
-              dayjs(first6MonthsStart).format("YYYY-MM-DD"),
-              dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-              userApiKeys[it]?.apiKey
-            );
-            let second6MonthsTransactions = await getTransactionsByType(
-              dayjs(second6MonthsStart).format("YYYY-MM-DD"),
-              dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-              userApiKeys[it]?.apiKey
-            );
+            // let first6MonthsTransactions = await getTransactionsByType(
+            //   dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+            //   dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+            //   userApiKeys[it]?.apiKey
+            // );
+            // let second6MonthsTransactions = await getTransactionsByType(
+            //   dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+            //   dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+            //   userApiKeys[it]?.apiKey
+            // );
             let newSales = first6MonthsSales.concat(second6MonthsSales);
-            let newTransactions = first6MonthsTransactions.concat(
-              second6MonthsTransactions
-            );
+            // let newTransactions = first6MonthsTransactions.concat(
+            //   second6MonthsTransactions
+            // );
             transactions = transactions.concat(newTransactions);
             data = data?.concat(newSales);
           }
@@ -103,20 +103,20 @@ export default async function handler(req, res) {
             body?.marketplace
           );
 
-          let first6MonthsTransactions = await getTransactionsByType(
-            dayjs(first6MonthsStart).format("YYYY-MM-DD"),
-            dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-            body?.marketplace
-          );
-          let second6MonthsTransactions = await getTransactionsByType(
-            dayjs(second6MonthsStart).format("YYYY-MM-DD"),
-            dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-            body?.marketplace
-          );
+          // let first6MonthsTransactions = await getTransactionsByType(
+          //   dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+          //   dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+          //   body?.marketplace
+          // );
+          // let second6MonthsTransactions = await getTransactionsByType(
+          //   dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+          //   dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+          //   body?.marketplace
+          // );
           data = first6MonthsSales?.concat(second6MonthsSales);
-          transactions = first6MonthsTransactions?.concat(
-            second6MonthsTransactions
-          );
+          // transactions = first6MonthsTransactions?.concat(
+          //   second6MonthsTransactions
+          // );
         }
       } else {
         if (body?.marketplace === "All market places") {
@@ -127,22 +127,22 @@ export default async function handler(req, res) {
               endDate,
               userApiKeys[it]?.apiKey
             );
-            let newTransactions = await getTransactionsByType(
-              startDate,
-              endDate,
-              userApiKeys[it]?.apiKey
-            );
+            // let newTransactions = await getTransactionsByType(
+            //   startDate,
+            //   endDate,
+            //   userApiKeys[it]?.apiKey
+            // );
 
             data = data?.concat(newSales);
-            transactions = transactions?.concat(newTransactions);
+            // transactions = transactions?.concat(newTransactions);
           }
         } else {
           data = await getAllSalesNew(startDate, endDate, body?.marketplace);
-          transactions = await getTransactionsByType(
-            startDate,
-            endDate,
-            body?.marketplace
-          );
+          // transactions = await getTransactionsByType(
+          //   startDate,
+          //   endDate,
+          //   body?.marketplace
+          // );
         }
       }
       const expenses = await expensesApi.getExpensesByDateRangeWithByCategories(

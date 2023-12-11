@@ -89,32 +89,32 @@ export default async function handler(req, res) {
               dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
               userApis[it]?.apiKey
             );
-            let first6MonthsTransactions = await getTransactionsByType(
-              dayjs(first6MonthsStart).format("YYYY-MM-DD"),
-              dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-              userApis[it]?.apiKey
-            );
-            let second6MonthsTransactions = await getTransactionsByType(
-              dayjs(second6MonthsStart).format("YYYY-MM-DD"),
-              dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-              userApis[it]?.apiKey
-            );
+            // let first6MonthsTransactions = await getTransactionsByType(
+            //   dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+            //   dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+            //   userApis[it]?.apiKey
+            // );
+            // let second6MonthsTransactions = await getTransactionsByType(
+            //   dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+            //   dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+            //   userApis[it]?.apiKey
+            // );
 
             sales = first6MonthsSales?.concat(second6MonthsSales);
-            transactions = first6MonthsTransactions?.concat(
-              second6MonthsTransactions
-            );
+            // transactions = first6MonthsTransactions?.concat(
+            //   second6MonthsTransactions
+            // );
           } else {
             sales = await getAllSalesNew(
               startDate,
               endDate,
               userApis[it]?.apiKey
             );
-            transactions = await getTransactionsByType(
-              startDate,
-              endDate,
-              userApis[it]?.apiKey
-            );
+            // transactions = await getTransactionsByType(
+            //   startDate,
+            //   endDate,
+            //   userApis[it]?.apiKey
+            // );
           }
           sales?.forEach((e) => {
             if (
@@ -334,32 +334,32 @@ export default async function handler(req, res) {
             dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
-          let first6MonthsTransactions = await getTransactionsByType(
-            dayjs(first6MonthsStart).format("YYYY-MM-DD"),
-            dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
-          );
-          let second6MonthsTransactions = await getTransactionsByType(
-            dayjs(second6MonthsStart).format("YYYY-MM-DD"),
-            dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
-          );
+          // let first6MonthsTransactions = await getTransactionsByType(
+          //   dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+          //   dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+          //   "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          // );
+          // let second6MonthsTransactions = await getTransactionsByType(
+          //   dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+          //   dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+          //   "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          // );
 
           sales = first6MonthsSales?.concat(second6MonthsSales);
-          transactions = first6MonthsTransactions?.concat(
-            second6MonthsTransactions
-          );
+          // transactions = first6MonthsTransactions?.concat(
+          //   second6MonthsTransactions
+          // );
         } else {
           sales = await getAllSalesNew(
             startDate,
             endDate,
             "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
           );
-          transactions = await getTransactionsByType(
-            startDate,
-            endDate,
-            "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
-          );
+          // transactions = await getTransactionsByType(
+          //   startDate,
+          //   endDate,
+          //   "abda55a7adc3c2892388c178514e90b6aa17da35b02a63471a3bc790dea4cf1dfd1fcdbe62022a400dbe95c744e1d951fc4899129762d7a0987447af0fee54b5"
+          // );
         }
         let totalRevenue = 0;
         let takealotFee = 0;

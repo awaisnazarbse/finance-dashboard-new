@@ -33,21 +33,21 @@ export default async function handler(req, res) {
           dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
           body?.apiKey
         );
-        let first6MonthsTransactions = await getTransactionsByType(
-          dayjs(first6MonthsStart).format("YYYY-MM-DD"),
-          dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
-          body?.apiKey
-        );
-        let second6MonthsTransactions = await getTransactionsByType(
-          dayjs(second6MonthsStart).format("YYYY-MM-DD"),
-          dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
-          body?.apiKey
-        );
+        // let first6MonthsTransactions = await getTransactionsByType(
+        //   dayjs(first6MonthsStart).format("YYYY-MM-DD"),
+        //   dayjs(first6MonthsEnd).format("YYYY-MM-DD"),
+        //   body?.apiKey
+        // );
+        // let second6MonthsTransactions = await getTransactionsByType(
+        //   dayjs(second6MonthsStart).format("YYYY-MM-DD"),
+        //   dayjs(second6MonthsEnd).format("YYYY-MM-DD"),
+        //   body?.apiKey
+        // );
 
         rangeSales = first6MonthsSales?.concat(second6MonthsSales);
-        transactions = first6MonthsTransactions?.concat(
-          second6MonthsTransactions
-        );
+        // transactions = first6MonthsTransactions?.concat(
+        //   second6MonthsTransactions
+        // );
         console.log("ranges sales length", rangeSales?.length);
       } else {
         let first6MonthsSales = await getAllSalesByProduct(
@@ -75,11 +75,11 @@ export default async function handler(req, res) {
           dayjs(body?.dates[1]).format("YYYY-MM-DD"),
           body?.apiKey
         );
-        transactions = await getTransactionsByType(
-          dayjs(body?.dates[0]).format("YYYY-MM-DD"),
-          dayjs(body?.dates[1]).format("YYYY-MM-DD"),
-          body?.apiKey
-        );
+        // transactions = await getTransactionsByType(
+        //   dayjs(body?.dates[0]).format("YYYY-MM-DD"),
+        //   dayjs(body?.dates[1]).format("YYYY-MM-DD"),
+        //   body?.apiKey
+        // );
         console.log("ranges sales length", rangeSales?.length);
       } else {
         rangeSales = await getAllSalesByProduct(

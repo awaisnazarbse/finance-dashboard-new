@@ -35,22 +35,22 @@ export default async function handler(req, res) {
               endDate,
               userApiKeys[i]?.apiKey
             );
-            let newTrans = await getTransactionsByType(
-              startDate,
-              endDate,
-              userApiKeys[i]?.apiKey
-            );
+            // let newTrans = await getTransactionsByType(
+            //   startDate,
+            //   endDate,
+            //   userApiKeys[i]?.apiKey
+            // );
 
             sales = sales?.concat(newSales);
-            transactions = transactions?.concat(newTrans);
+            // transactions = transactions?.concat(newTrans);
           }
         } else {
           sales = await getAllSalesNew(startDate, endDate, data?.marketplace);
-          transactions = await getTransactionsByType(
-            startDate,
-            endDate,
-            data?.marketplace
-          );
+          // transactions = await getTransactionsByType(
+          //   startDate,
+          //   endDate,
+          //   data?.marketplace
+          // );
         }
         const offerIds = [...new Set(sales?.map((sale) => sale.offer_id))];
         cogs = await getCog(offerIds);
