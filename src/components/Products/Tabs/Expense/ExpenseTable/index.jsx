@@ -114,7 +114,9 @@ const ExpenseTable = ({ offers, searchedText }) => {
         <div className="w-full flex items-center">
           <div className="w-full flex items-center">
             <span className="text-[11px] text-black max-w-xs">
-              {offers?.find((e) => e?.offer_id === record?.offer_id)?.title}
+              {offers
+                ? offers?.find((e) => e?.offer_id === record?.offer_id)?.title
+                : "-"}
             </span>
           </div>
         </div>

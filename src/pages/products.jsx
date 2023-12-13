@@ -5,6 +5,7 @@ import userApi from "@/lib/user";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const DashboardLayout = dynamic(() => import("../layout"));
@@ -13,8 +14,19 @@ const Offer = dynamic(() => import("../components/Products/Tabs/Offer"));
 const Report = dynamic(() => import("../components/Products/Tabs/Report"));
 
 const Products = () => {
-  const [active, setActive] = useState("Offer");
-  const tabs = ["Offer", "Expense", "Report"];
+  const router = useRouter();
+  const { tab } = router.query;
+  const [active, setActive] = useState(tab ? tab : "offers");
+  // const tabs = ["Offer", "Expense", "Report"];
+  const tabs = [
+    { title: "Offers", url: "/products?tab=offers", key: "offers" },
+    {
+      title: "Expenses",
+      url: "/products?tab=expenses",
+      key: "expenses",
+    },
+    { title: "Reports", url: "/products?tab=reports", key: "reports" },
+  ];
   const [marketplace, setMarketplace] = useState();
   const { user } = useAuth();
 
@@ -85,7 +97,7 @@ const Products = () => {
           <Loader />
         ) : (
           <main className="bg-[#E8ECF1] flex flex-col space-y-4">
-            {active === "Offer" && (
+            {active === "offers" && (
               <Offer
                 offers={data?.offers}
                 isLoading={isLoading}
@@ -96,10 +108,10 @@ const Products = () => {
                 sellerNames={data?.sellerNames}
               />
             )}
-            {active === "Expense" && (
-              <Expense offers={data} isLoading={isLoading} />
+            {active === "expenses" && (
+              <Expense offers={data?.offers} isLoading={isLoading} />
             )}
-            {active === "Report" && <Report />}
+            {active === "reports" && <Report />}
           </main>
         )}
       </DashboardLayout>

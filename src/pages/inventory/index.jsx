@@ -11,13 +11,25 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 const DashboardLayout = dynamic(() => import("../../layout"));
-const Planner = dynamic(() => import("../../components/Inventory/Tabs/Planner"));
+const Planner = dynamic(() =>
+  import("../../components/Inventory/Tabs/Planner")
+);
 
 const Inventory = () => {
   const router = useRouter();
   const { tab } = router.query;
-  const [active, setActive] = useState(tab ? tab : "Planner");
-  const tabs = ["Planner", "Purchased Orders", "Suppliers"];
+  console.log("tab",tab)
+  const [active, setActive] = useState(tab ? tab : "planner");
+  // const tabs = ["Planner", "Purchased Orders", "Suppliers"];
+  const tabs = [
+    { title: "Planner", url: "/inventory?tab=planner", key: "planner" },
+    {
+      title: "Purchased Orders",
+      url: "/inventory?tab=purchase-orders",
+      key: "purchase-orders",
+    },
+    { title: "Suppliers", url: "/inventory?tab=suppliers", key: "suppliers" },
+  ];
   const { user } = useAuth();
 
   const { data: userApiKeys, isLoading: keysLoading } = useQuery(
@@ -48,12 +60,12 @@ const Inventory = () => {
         tabs={tabs}
       >
         <main className="bg-[#E8ECF1] flex flex-col space-y-4">
-          {active === "Planner" && <Planner userApiKeys={userApiKeys} />}
-          {active === "Purchased Orders" && (
+          {active === "planner" && <Planner userApiKeys={userApiKeys} />}
+          {active === "purchase-orders" && (
             <PurchasedOrders userApiKeys={userApiKeys} />
           )}
           {/* {active === "Shipments" && <Shipments />} */}
-          {active === "Suppliers" && <Suppliers />}
+          {active === "suppliers" && <Suppliers />}
         </main>
       </DashboardLayout>
     </>

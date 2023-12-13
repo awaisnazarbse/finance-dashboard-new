@@ -15,7 +15,6 @@ const TopBar = ({
   setDuration,
   aggregatedBy,
   setAggregatedBy,
-  setOverallStats,
   setSearchedText,
   searchedText,
   offers,

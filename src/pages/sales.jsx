@@ -3,6 +3,7 @@ import userApi from "@/lib/user";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const DashboardLayout = dynamic(() => import("../layout"));
@@ -15,11 +16,26 @@ const SalesHeatMap = dynamic(() =>
 );
 
 const Sales = () => {
+  const router = useRouter();
+  const { tab } = router.query;
   const { user } = useAuth();
-  const [active, setActive] = useState("Orders");
+  const [active, setActive] = useState(tab ? tab : "orders");
   const [searchedText, setSearchedText] = useState("");
   const [marketplace, setMarketplace] = useState();
-  const tabs = ["Orders", "Returned Orders", "Sales Heat Map"];
+  // const tabs = ["Orders", "Returned Orders", "Sales Heat Map"];
+  const tabs = [
+    { title: "Orders", url: "/sales?tab=orders", key: "orders" },
+    {
+      title: "Returned Orders",
+      url: "/sales?tab=returned-orders",
+      key: "returned-orders",
+    },
+    {
+      title: "Sales Heat Map",
+      url: "/sales?tab=sales-heat-map",
+      key: "sales-heat-map",
+    },
+  ];
 
   const { data: userApiKeys, isLoading } = useQuery(
     ["user-api-keys"],
@@ -48,7 +64,7 @@ const Sales = () => {
         tabs={tabs}
       >
         <main className="bg-[#E8ECF1] flex flex-col space-y-4">
-          {active === "Orders" && (
+          {active === "orders" && (
             <Orders
               searchedText={searchedText}
               setSearchedText={setSearchedText}
@@ -57,7 +73,7 @@ const Sales = () => {
               setMarketplace={setMarketplace}
             />
           )}
-          {active === "Returned Orders" && !isLoading && (
+          {active === "returned-orders" && !isLoading && (
             <RemovalOrders
               searchedText={searchedText}
               setSearchedText={setSearchedText}
@@ -66,7 +82,7 @@ const Sales = () => {
               setMarketplace={setMarketplace}
             />
           )}
-          {active === "Sales Heat Map" && <SalesHeatMap />}
+          {active === "sales-heat-map" && <SalesHeatMap />}
         </main>
       </DashboardLayout>
     </>

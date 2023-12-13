@@ -56,15 +56,18 @@ const DashboardHeader = ({
           {tabs?.map((e, i) => (
             <Button
               style={{
-                color: active === e ? "#F7B614" : "#777777",
+                color: active === e?.key ? "#F7B614" : "#777777",
                 fontWeight: 500,
                 fontSize: ".8rem",
               }}
               key={i}
               type="link"
-              onClick={() => setActive(e)}
+              onClick={() => {
+                setActive(e?.key);
+                router.push(e?.url);
+              }}
             >
-              {e}
+              {e?.title}
             </Button>
           ))}
         </div>

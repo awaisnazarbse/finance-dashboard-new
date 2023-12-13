@@ -1,5 +1,7 @@
+import { useAuth } from "@/context/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const BarChart = dynamic(() => import("./BarChart"));
 const AnalysisCards = dynamic(() => import("./AnalysisCards"));
@@ -8,8 +10,6 @@ const TopBar = dynamic(() => import("./TopBar"));
 const RevenueTable = dynamic(() => import("./ReveueTable"));
 
 const ChatView = ({
-  stats,
-  statsLoading,
   startDate,
   endDate,
   setStartDate,
@@ -18,7 +18,6 @@ const ChatView = ({
   setDuration,
   aggregatedBy,
   setAggregatedBy,
-  setOverallStats,
   offers,
   setProductTitle,
   productTitle,
@@ -28,6 +27,45 @@ const ChatView = ({
   marketplace,
 }) => {
   const [searchedText, setSearchedText] = useState("");
+  const { user } = useAuth();
+  const { data: stats, isLoading: statsLoading } = useQuery(
+    ["overall-stats", startDate, endDate, productTitle, marketplace],
+    async () => {
+      const res = await fetch(`/api/overall-stats`, {
+        body: JSON.stringify({
+          apiKey: user?.apiKey,
+          startDate,
+          endDate,
+          duration,
+          productTitle,
+          uid: user?.uid,
+          marketplace,
+        }),
+        method: "POST",
+      });
+      const data = await res.json();
+      // const comparisons = await fetch(`/api/overall-stats/comparison`, {
+      //   body: JSON.stringify({
+      //     apiKey: user?.apiKey,
+      //     startDate,
+      //     endDate,
+      //     duration,
+      //     data,
+      //     productTitle,
+      //     uid: user?.uid,
+      //     marketplace,
+      //   }),
+      //   method: "POST",
+      // });
+      // const percents = await comparisons.json();
+      // const finalData = { ...data, ...percents };
+      return data;
+    },
+    {
+      enabled: !!user || !!marketplace,
+      refetchOnWindowFocus: false,
+    }
+  );
   return (
     <div className="relative">
       <TopBar
@@ -37,7 +75,6 @@ const ChatView = ({
         setEndDate={setEndDate}
         duration={duration}
         setDuration={setDuration}
-        setOverallStats={setOverallStats}
         aggregatedBy={aggregatedBy}
         setAggregatedBy={setAggregatedBy}
         searchedText={searchedText}

@@ -41,7 +41,7 @@ const Card = ({
             </span>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           {statsLoading ? (
             <AnalysisCardsSkeleton />
           ) : (
@@ -79,7 +79,7 @@ const Card = ({
               </span>
             </>
           )}
-        </div>
+        </div> */}
         <div className="w-full flex items-center left-0 justify-center absolute -bottom-2">
           <div
             className="w-6 h-6 bg-[#F7B614] cursor-pointer rounded-full flex items-center justify-center"

@@ -7,11 +7,13 @@ const SubCard = ({ title, cpt, jhb, currencySign = true }) => {
           <span className="text-black text-sm">CPT</span>
           <span className="text-black font-medium text-sm">
             {currencySign && "R "}
-            {Number(cpt)?.toLocaleString("en-US", {
-              style: "decimal",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {cpt
+              ? Number(cpt)?.toLocaleString("en-US", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : "-"}
           </span>
         </div>
         <div className="h-16 w-2 bg-[#F7B614]"></div>
@@ -19,11 +21,13 @@ const SubCard = ({ title, cpt, jhb, currencySign = true }) => {
           <span className="text-black text-sm font-normal">JHB</span>
           <span className="text-black font-medium text-sm">
             {currencySign && "R "}
-            {Number(jhb)?.toLocaleString("en-US", {
-              style: "decimal",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {jhb
+              ? Number(jhb)?.toLocaleString("en-US", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : "-"}
           </span>
         </div>
       </div>

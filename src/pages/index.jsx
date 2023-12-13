@@ -8,6 +8,7 @@ import axios from "axios";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const DashboardLayout = dynamic(() => import("../layout"));
@@ -17,6 +18,8 @@ const TileView = dynamic(() => import("../components/Home/Tabs/TileView"));
 const Trend = dynamic(() => import("../components/Home/Tabs/Trend"));
 
 export default function Home() {
+  const router = useRouter();
+  const { tab } = router.query;
   const [overallStats, setOverallStats] = useState();
   const [startDate, setStartDate] = useState(new Date());
   const [todaySalesData, setTodaySalesData] = useState([]);
@@ -25,8 +28,18 @@ export default function Home() {
   const [aggregatedBy, setAggregatedBy] = useState("Hourly");
   const [productTitle, setProductTitle] = useState("");
   const [marketplace, setMarketplace] = useState();
-  const [active, setActive] = useState("Chart View");
-  const tabs = ["Chart View", "Tile View", "P&L", "Trend"];
+  const [active, setActive] = useState(tab ? tab : "chart-view");
+  // const tabs = ["Chart View", "Tile View", "P&L", "Trend"];
+  const tabs = [
+    { title: "Chart View", url: "/?tab=chart-view", key: "chart-view" },
+    {
+      title: "Tile View",
+      url: "/?tab=tile-view",
+      key: "tile-view",
+    },
+    { title: "P&L", url: "/?tab=pl", key: "pl" },
+    { title: "Trend", url: "/?tab=trend", key: "trend" },
+  ];
 
   const { user } = useAuth();
 
@@ -61,44 +74,7 @@ export default function Home() {
     }
   );
 
-  const { data: stats, isLoading: statsLoading } = useQuery(
-    ["overall-stats", startDate, endDate, productTitle, marketplace],
-    async () => {
-      const res = await fetch(`/api/overall-stats`, {
-        body: JSON.stringify({
-          apiKey: user?.apiKey,
-          startDate,
-          endDate,
-          duration,
-          productTitle,
-          uid: user?.uid,
-          marketplace,
-        }),
-        method: "POST",
-      });
-      const data = await res.json();
-      const comparisons = await fetch(`/api/overall-stats/comparison`, {
-        body: JSON.stringify({
-          apiKey: user?.apiKey,
-          startDate,
-          endDate,
-          duration,
-          data,
-          productTitle,
-          uid: user?.uid,
-          marketplace,
-        }),
-        method: "POST",
-      });
-      const percents = await comparisons.json();
-      const finalData = { ...data, ...percents };
-      return finalData;
-    },
-    {
-      enabled: !!user || !!marketplace,
-      refetchOnWindowFocus: false,
-    }
-  );
+
 
   const { data: offers, isLoading: offersLoading } = useQuery(
     ["offers", marketplace],
@@ -131,11 +107,10 @@ export default function Home() {
         tabs={tabs}
       >
         <main className="bg-[#E8ECF1] flex flex-col space-y-4">
-          {active === "Chart View" && (
+          {active === "chart-view" && (
             <ChatView
-              setOverallStats={setOverallStats}
-              stats={stats}
-              statsLoading={statsLoading}
+              // setOverallStats={setOverallStats}
+              // stats={stats}
               setTodaySalesData={setTodaySalesData}
               startDate={startDate}
               endDate={endDate}
@@ -154,13 +129,13 @@ export default function Home() {
               setMarketplace={setMarketplace}
             />
           )}
-          {active === "Tile View" && (
+          {active === "tile-view" && (
             <TileView offers={offers} userApiKeys={userApiKeys} />
           )}
-          {active === "P&L" && (
+          {active === "pl" && (
             <PAndL offers={offers} userApiKeys={userApiKeys} />
           )}
-          {active === "Trend" && <Trend userApiKeys={userApiKeys} />}
+          {active === "trend" && <Trend userApiKeys={userApiKeys} />}
         </main>
       </DashboardLayout>
       {apiModal && (
